@@ -18,7 +18,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\JordanExceptions\JordanExceptions.csproj" />
-    <ProjectReference Include="..\JprdanExceptions\JordanExceptions.csproj" />
   </ItemGroup>
 
   <ItemGroup>

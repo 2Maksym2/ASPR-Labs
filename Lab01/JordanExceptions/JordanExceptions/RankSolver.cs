@@ -14,8 +14,6 @@ namespace JordanExceptions
           _jordan = jordan;
         }
 
-
-
         public int GetSolution(double[,] matrixA, int r, int c) 
         {
 

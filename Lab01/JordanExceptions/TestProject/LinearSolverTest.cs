@@ -10,6 +10,7 @@ namespace TestProject
         [InlineData(new double[] {-1,1,1,-1,-2,2,3,-1,3}, 3, new double[] {4,3,2}, new double[] {-1,1,2})]
         public void GetSolution(double[] Matrix, int n, double[] a, double[] expected)
         {
+            var _protocol = new SaveProtocol();
 
             double[,] inputMatrix = new double[n, n];
             for (int i = 0; i < n; i++)
@@ -17,8 +18,8 @@ namespace TestProject
                     inputMatrix[i, j] = Matrix[i * n + j];
 
             var _jordan = new JordanMethod();
-            var _solver = new LinearSolver();
-            var _invertor = new MatrixInvertor(_jordan);
+            var _solver = new LinearSolver(_protocol);
+            var _invertor = new MatrixInvertor(_jordan, _protocol);
 
 
             inputMatrix = _invertor.InvertMatrix(inputMatrix);

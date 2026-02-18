@@ -11,8 +11,9 @@ namespace TestProject
 
         public void MatrixSolverTest(double[] Matrix, int n, double[] Expected)
         {
+            var _protocol = new SaveProtocol();
             var jordan = new JordanMethod();
-            var solver = new MatrixInvertor(jordan);
+            var solver = new MatrixInvertor(jordan, _protocol);
 
             double[,] inputMatrix = new double[n, n];
             for (int i = 0; i < n; i++)
