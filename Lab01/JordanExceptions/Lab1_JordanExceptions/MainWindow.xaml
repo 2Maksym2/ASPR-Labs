@@ -6,7 +6,19 @@
         xmlns:local="clr-namespace:Lab1_JordanExceptions"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid>
-
+    <Grid Background="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}">
+        <TextBox x:Name="txtbx_A"  AcceptsReturn="True" HorizontalAlignment="Left" Margin="10,36,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="210" Height="131" FontSize="18"/>
+        <Label Content="Матриця A:" HorizontalAlignment="Left" Height="35" Margin="10,1,0,0" VerticalAlignment="Top" Width="159" FontSize="18"/>
+        <Button x:Name="btn_rank" Content="Знайти ранг матриці" HorizontalAlignment="Left" Margin="10,187,0,0" VerticalAlignment="Top" Height="30" Width="159" BorderBrush="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" Background="#FFADEDFF" FontSize="14" Click="Btn_rank_Click" />
+        <Button x:Name="btn_result" Content="Обчислити СЛАР" HorizontalAlignment="Left" Margin="515,187,0,0" VerticalAlignment="Top" Height="30" Width="140" BorderBrush="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" Background="#FFADEDFF" FontSize="14" Click="Btn_result_Click"/>
+        <Button x:Name="btn_invert" Content="Знайти обернену матрицю" HorizontalAlignment="Left" Margin="268,182,0,0" VerticalAlignment="Top" Height="35" Width="192" BorderBrush="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" Background="#FFADEDFF" FontSize="14" Click="Btn_invert_Click"/>
+        <Label Content="Матриця B:" HorizontalAlignment="Left" Height="35" Margin="241,0,0,0" VerticalAlignment="Top" Width="159" FontSize="18"/>
+        <TextBox x:Name="txtbx_b"  AcceptsReturn="True" HorizontalAlignment="Left" Margin="241,36,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="79" Height="131" FontSize="18"/>
+        <Label Content="Ранг =" HorizontalAlignment="Left" Height="35" Margin="0,236,0,0" VerticalAlignment="Top" Width="73" FontSize="18"/>
+        <Label Content="Обернена матриця:" HorizontalAlignment="Left" Height="35" Margin="268,229,0,0" VerticalAlignment="Top" Width="175" FontSize="18"/>
+        <Label Content="Матриця X:" HorizontalAlignment="Left" Height="35" Margin="515,236,0,0" VerticalAlignment="Top" Width="159" FontSize="18"/>
+        <TextBox x:Name="txtbx_invert" AcceptsReturn="True" HorizontalAlignment="Left" Margin="259,269,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="210" Height="131" FontSize="18"/>
+        <TextBox x:Name="txtbx_X" AcceptsReturn="True" HorizontalAlignment="Left" Margin="515,269,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="72" Height="131" FontSize="18"/>
+        <TextBox x:Name="txtbx_rank"  HorizontalAlignment="Left" Margin="73,245,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="128" FontSize="14" Height="26" IsEnabled="False"/>
     </Grid>
 </Window>
