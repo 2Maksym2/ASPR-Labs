@@ -7,7 +7,8 @@ namespace TestProject
         [Fact]
         public void MatrixSolverTest()
         {
-            var solver = new JordanMethod();
+            var jordan = new JordanMethod();
+            var solver = new MatrixInvertor(jordan);
 
             double[,] inputMatrix = {
               { 5.0, -3.0, 7.0 },
