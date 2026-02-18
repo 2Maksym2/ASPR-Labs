@@ -10,33 +10,47 @@
         }
 
 
-        public double[,] MatrixSolver(double[,] matrixA, double a, int n)
+        public double[,] MatrixSolver(double[,] matrixA, double a, int r, int s)
         {
             int rows = matrixA.GetLength(0);
             int cols = matrixA.GetLength(1);
             double[,] matrixB = new double[rows, cols];
 
-            matrixB[n, n] = 1 / a;
-
             for (int i = 0; i < rows; i++)
             {
                 for (int j = 0; j < cols; j++)
                 {
-                    if (i == n && j == n) continue;
+                    if (i == r && j == s) matrixB[r, s] = 1 / a;
+                   
+                    else if (i == r && j != s)
+                        matrixB[r, j] = -matrixA[r, j] / a;
 
-                    if (i == n && j != n)
-                        matrixB[n, j] = -matrixA[n, j] / a;
+                    else if (i != r && j == s)
+                        matrixB[i, s] = matrixA[i, s] / a;
 
-                    if (i != n && j == n)                  
-                        matrixB[i, n] = matrixA[i, n] / a;
-                  
-                    matrixB[i, j] = (a * matrixA[i, j] - matrixA[i, n] * matrixA[n, j]) / a;                   
+                    else
+                    {
+                        matrixB[i, j] = (a * matrixA[i, j] - matrixA[i, s] * matrixA[r, j]) / a;
+                    }        
                 }
             }
 
 
             return matrixB;
 
+        }
+
+
+        public double[,] InvertMatrix(double[,] matrixA)
+        {
+            int n = matrixA.GetLength(0);
+            double[,] result = matrixA;
+            for (int i = 0; i < n; i++)
+            {
+                result = MatrixSolver(result, result[i, i], i, i);
+            }
+
+            return result;
         }
     }
 }
