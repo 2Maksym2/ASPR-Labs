@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.36414.22
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JordanExceptions", "JprdanExceptions\JordanExceptions.csproj", "{1A705F82-E705-4B2A-BBC9-4BED3C83701F}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestProject", "TestProject\TestProject.csproj", "{21998132-CB36-4441-9A97-DA9ABB509058}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JordanExceptions", "JordanExceptions\JordanExceptions.csproj", "{A634A0A8-5F9C-F51D-5008-B220BC28929E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,14 +13,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{1A705F82-E705-4B2A-BBC9-4BED3C83701F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1A705F82-E705-4B2A-BBC9-4BED3C83701F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1A705F82-E705-4B2A-BBC9-4BED3C83701F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1A705F82-E705-4B2A-BBC9-4BED3C83701F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{21998132-CB36-4441-9A97-DA9ABB509058}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{21998132-CB36-4441-9A97-DA9ABB509058}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{21998132-CB36-4441-9A97-DA9ABB509058}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{21998132-CB36-4441-9A97-DA9ABB509058}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A634A0A8-5F9C-F51D-5008-B220BC28929E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A634A0A8-5F9C-F51D-5008-B220BC28929E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A634A0A8-5F9C-F51D-5008-B220BC28929E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A634A0A8-5F9C-F51D-5008-B220BC28929E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
