@@ -9,19 +9,23 @@ namespace JordanExceptions
     public class LinearSolver
     {
         private readonly ISaveProtocol _protocol;
+        private readonly IMatrixInvertor _invertor;
 
-        public LinearSolver(ISaveProtocol protocol) 
+        public LinearSolver(ISaveProtocol protocol, IMatrixInvertor invertor) 
         { 
           _protocol = protocol;
+          _invertor = invertor;
         }
 
         public double[] GetSolution(double[,] MatrixA, double[] a) 
         {
             int x = a.Length;
             double [] b = new double[x];
+            _invertor.InvertMatrix(MatrixA);
 
             _protocol.StepSave("Вхідна матриця B: \n\n");
             for (int i = 0; i < b.Length; i++) _protocol.StepSave($"{ a[i]} \n");
+
 
             for (int i = 0; i < x; i++) 
             {
@@ -43,6 +47,7 @@ namespace JordanExceptions
                 _protocol.StepSave(res);
 
             }
+
             return b;
         }
     }

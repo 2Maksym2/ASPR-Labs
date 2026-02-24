@@ -43,12 +43,12 @@ namespace JordanExceptions
 
         }
 
-        public void ResultSave(int stepNumber, double[,] x)
+        public void ResultSave(int stepNumber, double[,] x, double[,] a)
         {
             lock (_path)
             {
                 string res = $"\nКрок {stepNumber+1}:  \n";
-                res += $"\nРозв`язувальний елемент A[{stepNumber}][{stepNumber}]: {x[stepNumber, stepNumber]:F2} \n";
+                res += $"\nРозв`язувальний елемент A[{stepNumber}][{stepNumber}]: {a[stepNumber, stepNumber]:F2} \n";
                 res += "\nМатриця після виконання ЗЖВ:  \n";
 
                 for (int i = 0; i < x.GetLength(0); i++)
@@ -74,11 +74,12 @@ namespace JordanExceptions
 
                 for (int i = 0; i < b.GetLength(0); i++)
                 {
-                    res += "\n";
                     for (int j = 0; j < b.GetLength(1); j++)
                     {
                         res += $" {b[i, j]:F2}";
                     }
+                    res += "\n";
+
                 }
 
 
@@ -92,6 +93,62 @@ namespace JordanExceptions
             lock (_path)
             {
 
+                File.AppendAllText(_path, res);
+            }
+        }
+
+        public void RankSave(int r, double[,] x, double[,] a)
+        {
+            lock (_path)
+            {
+
+                string res = "\n Початкова матриця:  \n";
+
+                for (int i = 0; i < x.GetLength(0); i++)
+                {
+                    for (int j = 0; j < x.GetLength(1); j++)
+                    {
+                        res += $" {x[i, j]:F2}";
+                    }
+                    res += "\n";
+
+                }
+                res += "\n Матриця після виконання ЗЖВ:  \n";
+
+                for (int i = 0; i < a.GetLength(0); i++)
+                {
+                    for (int j = 0; j < a.GetLength(1); j++)
+                    {
+                        res += $" {a[i, j]:F2}";
+                    }
+                    res += "\n";
+
+                }
+
+                res += $"\n Поточний ранг R = {r} \n";
+                File.AppendAllText(_path, res);
+            }
+        }
+
+        public void RankResultSave(int r, double[,] x)
+        {
+            lock (_path)
+            {
+
+                string res = "\n Кінцева матриця:  \n";
+
+                for (int i = 0; i < x.GetLength(0); i++)
+                {
+                    for (int j = 0; j < x.GetLength(1); j++)
+                    {
+                        res += $" {x[i, j]:F2}";
+                    }
+                    res += "\n";
+
+                }
+
+
+                res += $"Ранг матриці R = {r}";
                 File.AppendAllText(_path, res);
             }
         }

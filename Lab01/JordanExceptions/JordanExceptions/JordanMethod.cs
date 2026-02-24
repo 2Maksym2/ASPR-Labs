@@ -16,6 +16,7 @@
             int cols = matrixA.GetLength(1);
             double[,] matrixB = new double[rows, cols];
 
+
             for (int i = 0; i < rows; i++)
             {
                 for (int j = 0; j < cols; j++)

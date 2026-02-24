@@ -18,6 +18,7 @@ namespace Lab1_JordanExceptions
         private readonly LinearSolver _linearSolver;
         private readonly IMatrixInvertor _invertor;
         private readonly ISaveProtocol _protocol;
+        private string fullPath { get; set; }
 
         public MainWindow()
         {
@@ -25,22 +26,24 @@ namespace Lab1_JordanExceptions
 
             _protocol = new SaveProtocol();
             var jordan = new JordanMethod();
-            _rankSolver = new RankSolver(jordan);
-            _linearSolver = new LinearSolver(_protocol); 
-            _invertor = new MatrixInvertor(jordan, _protocol); 
+            _rankSolver = new RankSolver(_protocol, jordan);
+            _invertor = new MatrixInvertor(jordan, _protocol);
+            _linearSolver = new LinearSolver(_protocol, _invertor);
 
-            btn_rank.Click += Btn_rank_Click;
-            btn_result.Click += Btn_result_Click;
-            btn_invert.Click += Btn_invert_Click;
+            fullPath = System.IO.Path.GetFullPath("Protocol.txt");
+
         }
 
         private void Btn_rank_Click(object sender, RoutedEventArgs e)
         {
             try
             {
+                _protocol.FileCleaner();
                 var matrixA = ParseMatrix(txtbx_A.Text);
                 int rank = _rankSolver.GetSolution(matrixA, matrixA.GetLength(0), matrixA.GetLength(1));
                 txtbx_rank.Text = rank.ToString();
+
+                txtblk_protocol.Text = $"Протокол обичслень створено за посиланням: {fullPath}";
             }
             catch (Exception ex)
             {
@@ -56,16 +59,17 @@ namespace Lab1_JordanExceptions
                 var matrixA = ParseMatrix(txtbx_A.Text);
                 var vectorB = ParseVector(txtbx_b.Text);
 
-                if (matrixA.GetLength(1) != vectorB.Length)
+                if (matrixA.GetLength(0) != vectorB.Length)
                 {
-                    MessageBox.Show("Кількість стовпців A має дорівнювати довжині b!");
-                    return;
+                    throw new Exception("Кількість рядків A має дорівнювати довжині b!");
                 }
 
-                matrixA = _invertor.InvertMatrix(matrixA);
                 double[] xResult = _linearSolver.GetSolution(matrixA, vectorB);
 
                 txtbx_X.Text = string.Join(Environment.NewLine, xResult.Select(v => v.ToString("F2")));
+
+                txtblk_protocol.Text = $"Протокол обичслень створено за посиланням: {fullPath}";
+
             }
             catch (Exception ex)
             {
@@ -77,10 +81,14 @@ namespace Lab1_JordanExceptions
         {
             try
             {
+                _protocol.FileCleaner();
                 var matrixA = ParseMatrix(txtbx_A.Text);
                 double[,] inverted = _invertor.InvertMatrix(matrixA);
 
                 txtbx_invert.Text = FormatMatrixToString(inverted);
+
+                txtblk_protocol.Text = $"Протокол обичслень створено за посиланням: {fullPath}";
+
             }
             catch (Exception ex)
             {
@@ -128,6 +136,11 @@ namespace Lab1_JordanExceptions
                 result += Environment.NewLine;
             }
             return result;
+        }
+
+        private void btn_exit_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
         }
     }
 }
