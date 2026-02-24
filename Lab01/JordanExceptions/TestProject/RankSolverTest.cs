@@ -15,13 +15,15 @@ namespace TestProject
         [InlineData(new double[] {1,2,3,4,-2,5,-1,3,2,4,7,8,-1,9,2,7}, 4, 4, 4)]
         public void GetSolution(double[] Matrix, int r, int c, int expected)
         {
+            var _protocol = new SaveProtocol();
+
             double[,] inputMatrix = new double[r, c];
             for (int i = 0; i < r; i++)
                 for (int j = 0; j < c; j++)
                     inputMatrix[i, j] = Matrix[i * c + j];
 
             var _jordan = new JordanMethod();
-            var _rank = new RankSolver(_jordan);
+            var _rank = new RankSolver(_protocol, _jordan);
             int rank = 0;
 
 
