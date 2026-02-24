@@ -148,7 +148,7 @@ namespace JordanExceptions
                 }
 
 
-                res += $"Ранг матриці R = {r}";
+                res += $"\n Ранг матриці R = {r}";
                 File.AppendAllText(_path, res);
             }
         }
