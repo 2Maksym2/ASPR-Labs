@@ -21,7 +21,7 @@ namespace JordanExceptions
         {
             int x = a.Length;
             double [] b = new double[x];
-            _invertor.InvertMatrix(MatrixA);
+            MatrixA = _invertor.InvertMatrix(MatrixA);
 
             _protocol.StepSave("Вхідна матриця B: \n\n");
             for (int i = 0; i < b.Length; i++) _protocol.StepSave($"{ a[i]} \n");
