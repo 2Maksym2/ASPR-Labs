@@ -33,3 +33,4 @@ Lab1 — десктопний додаток на WPF (C#) для виконан
 <img width="585" height="929" alt="image" src="https://github.com/user-attachments/assets/7a02a182-3d64-4658-90a6-ceb2f8c2604e" />
 
 Рисунок 3 – Згенерований протокол обчислень
+
