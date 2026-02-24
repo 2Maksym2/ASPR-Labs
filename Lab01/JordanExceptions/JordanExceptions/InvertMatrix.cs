@@ -23,7 +23,7 @@ namespace JordanExceptions
             {
                 double[,] log = result;
                 result = _jordan.MatrixSolver(result, result[i, i], i, i);
-                _protocol.ResultSave(i, result);
+                _protocol.ResultSave(i, result, log);
             }
 
             _protocol.InvertMatrixSave(result);
