@@ -24,10 +24,10 @@
                     if (i == r && j == s) matrixB[r, s] = 1 / a;
 
                     else if (i == r && j != s)
-                        matrixB[r, j] = -matrixA[r, j] / a;
+                        matrixB[r, j] = matrixA[r, j] / a;
 
                     else if (i != r && j == s)
-                        matrixB[i, s] = matrixA[i, s] / a;
+                        matrixB[i, s] = -matrixA[i, s] / a;
 
                     else
                     {
