@@ -251,7 +251,7 @@ namespace JordanExceptions
                 StringBuilder sb = new StringBuilder();
                 sb.AppendLine("\nРезультат:");
                 sb.Append("X = (");
-                sb.Append(string.Join("; ", x.Select(v => v.ToString("F2"))));
+                sb.Append(string.Join("; ", x.Take(x.Length-1).Select(v => v.ToString("F2"))));
                 sb.AppendLine(")");
                 sb.AppendLine($"Z = {zValue:F2}\n");
                 File.AppendAllText(_path, sb.ToString());
