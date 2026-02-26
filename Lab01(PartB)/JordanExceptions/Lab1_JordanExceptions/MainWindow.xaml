@@ -5,22 +5,77 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Lab1_JordanExceptions"
         mc:Ignorable="d"
-        Title="Lab1_PartA" Height="450" Width="800">
+        Title="Lab1_PartB" Height="500" Width="800">
     <Grid Background="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}">
-        <TextBox x:Name="txtbx_A"  AcceptsReturn="True" HorizontalAlignment="Left" Margin="10,36,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="210" Height="131" FontSize="18"/>
-        <Label Content="Матриця A:" HorizontalAlignment="Left" Height="35" Margin="10,1,0,0" VerticalAlignment="Top" Width="159" FontSize="18"/>
-        <Button x:Name="btn_rank" Content="Знайти ранг матриці" HorizontalAlignment="Left" Margin="10,187,0,0" VerticalAlignment="Top" Height="30" Width="159" BorderBrush="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" Background="#FFADEDFF" FontSize="14" Click="Btn_rank_Click" />
-        <Button x:Name="btn_result" Content="Обчислити СЛАР" HorizontalAlignment="Left" Margin="515,187,0,0" VerticalAlignment="Top" Height="30" Width="140" BorderBrush="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" Background="#FFADEDFF" FontSize="14" Click="Btn_result_Click"/>
-        <Button x:Name="btn_invert" Content="Знайти обернену матрицю" HorizontalAlignment="Left" Margin="268,182,0,0" VerticalAlignment="Top" Height="35" Width="192" BorderBrush="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" Background="#FFADEDFF" FontSize="14" Click="Btn_invert_Click"/>
-        <Label Content="Матриця B:" HorizontalAlignment="Left" Height="35" Margin="241,0,0,0" VerticalAlignment="Top" Width="159" FontSize="18"/>
-        <TextBox x:Name="txtbx_b"  AcceptsReturn="True" HorizontalAlignment="Left" Margin="241,36,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="79" Height="131" FontSize="18"/>
-        <Label Content="Ранг =" HorizontalAlignment="Left" Height="35" Margin="0,236,0,0" VerticalAlignment="Top" Width="73" FontSize="18"/>
-        <Label Content="Обернена матриця:" HorizontalAlignment="Left" Height="35" Margin="268,229,0,0" VerticalAlignment="Top" Width="175" FontSize="18"/>
-        <Label Content="Матриця X:" HorizontalAlignment="Left" Height="35" Margin="515,236,0,0" VerticalAlignment="Top" Width="159" FontSize="18"/>
-        <TextBox x:Name="txtbx_invert" AcceptsReturn="True" HorizontalAlignment="Left" Margin="259,269,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="210" Height="131" FontSize="18" IsEnabled="False"/>
-        <TextBox x:Name="txtbx_X" AcceptsReturn="True" HorizontalAlignment="Left" Margin="515,269,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="72" Height="131" FontSize="18" IsEnabled="False"/>
-        <TextBox x:Name="txtbx_rank"  HorizontalAlignment="Left" Margin="73,245,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="128" FontSize="14" Height="26" IsEnabled="False"/>
-        <Button x:Name="btn_exit" Content="Вийти" HorizontalAlignment="Left" Margin="633,357,0,0" VerticalAlignment="Top" Height="43" Width="126" BorderBrush="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" Background="#FFADEDFF" FontSize="14" Click="btn_exit_Click"/>
-        <TextBlock x:Name="txtblk_protocol" HorizontalAlignment="Left" Margin="400,35,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="98" Width="359" IsEnabled="False" FontSize="16"/>
+        <TabControl>
+            <TabItem Header="Розв'язання ЗЛП МЖВ">
+                <Grid Background="White">
+                    <StackPanel Margin="20">
+
+                        <StackPanel Orientation="Horizontal" Margin="0,10">
+                            <TextBlock Text="Z =" VerticalAlignment="Center" Margin="0,0,10,0" FontSize="16"/>
+                            <TextBox x:Name="txtZFunction" Width="300" Height="30" VerticalContentAlignment="Center"/>
+
+                            <StackPanel Orientation="Horizontal" Margin="20,0,0,0">
+                                <RadioButton Content="min" IsChecked="True" x:Name="rbMin" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                <RadioButton Content="max" x:Name="rbMax" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <Grid Margin="0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="300"/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Обмеження:" Margin="0,0,0,5" FontSize="14"/>
+                                <TextBox x:Name="txtConstraints" Height="150" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" Padding="5"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1" VerticalAlignment="Top" Margin="20,25,0,0">
+                                <Button Content="Знайти оптимальний розв'язок" Height="50" FontWeight="Bold" Click="btnCalculate_Click" Width="226"/>
+
+                                <StackPanel Margin="0,20,0,0">
+                                    <StackPanel Orientation="Horizontal" Margin="0,5">
+                                        <TextBlock Text="X =" Width="30" VerticalAlignment="Center"/>
+                                        <TextBox x:Name="txtResultX" Width="200" Height="25" IsReadOnly="True" VerticalContentAlignment="Center" IsEnabled="False"/>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0,5">
+                                        <TextBlock Text="Z =" Width="30" VerticalAlignment="Center"/>
+                                        <TextBox x:Name="txtResultZ" Width="200" Height="25" IsReadOnly="True" VerticalContentAlignment="Center" IsEnabled="False"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </StackPanel>
+                        </Grid>
+
+                    </StackPanel>
+                    <TextBlock x:Name="txtblk_protocol1" TextWrapping="Wrap" Height="auto" Width="auto" IsEnabled="False" FontSize="16" Margin="38,287,397,20"/>
+
+                </Grid>
+            </TabItem>
+            <TabItem Header="Матричні обчислення">
+                <Grid Background="#FFE5E5E5">
+
+                    <TextBox x:Name="txtbx_A"  AcceptsReturn="True" HorizontalAlignment="Left" Margin="10,36,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="210" Height="131" FontSize="18"/>
+                    <Label Content="Матриця A:" HorizontalAlignment="Left" Height="35" Margin="10,1,0,0" VerticalAlignment="Top" Width="159" FontSize="18"/>
+                    <Button x:Name="btn_rank" Content="Знайти ранг матриці" HorizontalAlignment="Left" Margin="10,187,0,0" VerticalAlignment="Top" Height="30" Width="159" BorderBrush="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" Background="#FFADEDFF" FontSize="14" Click="Btn_rank_Click" />
+                    <Button x:Name="btn_result" Content="Обчислити СЛАР" HorizontalAlignment="Left" Margin="515,187,0,0" VerticalAlignment="Top" Height="30" Width="140" BorderBrush="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" Background="#FFADEDFF" FontSize="14" Click="Btn_result_Click"/>
+                    <Button x:Name="btn_invert" Content="Знайти обернену матрицю" HorizontalAlignment="Left" Margin="268,182,0,0" VerticalAlignment="Top" Height="35" Width="192" BorderBrush="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" Background="#FFADEDFF" FontSize="14" Click="Btn_invert_Click"/>
+                    <Label Content="Матриця B:" HorizontalAlignment="Left" Height="35" Margin="241,0,0,0" VerticalAlignment="Top" Width="159" FontSize="18"/>
+                    <TextBox x:Name="txtbx_b"  AcceptsReturn="True" HorizontalAlignment="Left" Margin="241,36,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="79" Height="131" FontSize="18"/>
+                    <Label Content="Ранг =" HorizontalAlignment="Left" Height="35" Margin="0,236,0,0" VerticalAlignment="Top" Width="73" FontSize="18"/>
+                    <Label Content="Обернена матриця:" HorizontalAlignment="Left" Height="35" Margin="268,229,0,0" VerticalAlignment="Top" Width="175" FontSize="18"/>
+                    <Label Content="Матриця X:" HorizontalAlignment="Left" Height="35" Margin="515,236,0,0" VerticalAlignment="Top" Width="159" FontSize="18"/>
+                    <TextBox x:Name="txtbx_invert" AcceptsReturn="True" HorizontalAlignment="Left" Margin="259,269,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="210" Height="131" FontSize="18" IsEnabled="False"/>
+                    <TextBox x:Name="txtbx_X" AcceptsReturn="True" HorizontalAlignment="Left" Margin="515,269,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="72" Height="131" FontSize="18" IsEnabled="False"/>
+                    <TextBox x:Name="txtbx_rank"  HorizontalAlignment="Left" Margin="73,245,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="128" FontSize="14" Height="26" IsEnabled="False"/>
+                    <Button x:Name="btn_exit" Content="Вийти" HorizontalAlignment="Left" Margin="633,357,0,0" VerticalAlignment="Top" Height="43" Width="126" BorderBrush="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" Background="#FFADEDFF" FontSize="14" Click="btn_exit_Click"/>
+                    <TextBlock x:Name="txtblk_protocol" HorizontalAlignment="Left" Margin="400,35,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="98" Width="359" IsEnabled="False" FontSize="16"/>
+
+
+                </Grid>
+            </TabItem>
+        </TabControl>
     </Grid>
 </Window>

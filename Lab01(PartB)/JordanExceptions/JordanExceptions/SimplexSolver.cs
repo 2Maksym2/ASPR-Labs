@@ -17,7 +17,7 @@ namespace JordanExceptions
         private readonly ISaveProtocol _protocol;
         private readonly IJordanMethod _jordan;
 
-        public SimplexSolver(SaveProtocol protocol, JordanMethod jordan) 
+        public SimplexSolver(ISaveProtocol protocol, IJordanMethod jordan) 
         { 
             _protocol = protocol;            
             _jordan = jordan;
@@ -151,7 +151,9 @@ namespace JordanExceptions
             _protocol.SaveSectionHeader("ОПТИМАЛЬНИЙ РОЗВ'ЯЗОК: ");
             _protocol.ResultSimplexSave(resX, MatrixA[rowsCount, colsCount]);
 
-            return resX; ;
+            resX[resX.Length-1] = MatrixA[rowsCount, colsCount];
+
+            return resX;
         }
 
 
@@ -227,7 +229,7 @@ namespace JordanExceptions
             int rowsCount = MatrixA.GetLength(0) - 1;
             int colsCount = MatrixA.GetLength(1) - 1;
 
-            double[] x = new double[colsCount];
+            double[] x = new double[colsCount+1];
 
 
             for (int i = 0; i < rowsCount; i++)
