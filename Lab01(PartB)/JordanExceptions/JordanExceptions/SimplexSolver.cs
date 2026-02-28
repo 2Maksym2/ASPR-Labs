@@ -27,81 +27,75 @@ namespace JordanExceptions
 
         public double[,] FindInitialFeasibleSolution(double[,] MatrixA)
         {
-            int row = -1;
-            int column = -1;
 
             int rowsCount = MatrixA.GetLength(0) - 1;
             int colsCount = MatrixA.GetLength(1) - 1;
 
-            bool IsComplete = false;
-
-            
-
-            for (int i = 0; i < rowsCount; i++)
+            while (true)
             {
-                if (MatrixA[i, colsCount] < 0)
+                int row = -1;
+
+                for (int i = 0; i < rowsCount; i++)
                 {
-                    row = i;
-                    IsComplete = true;
-                    break;
-                }                
-            }
-
-
-
-            if (IsComplete)
-            {
-                IsComplete = false;
-
-                for (int j = 0; j < colsCount; j++)
-                {
-                    if (MatrixA[row, j] < 0)
+                    if (MatrixA[i, colsCount] < 0)
                     {
-                        column = j;
-                        IsComplete = true;
+                        row = i;
                         break;
                     }
                 }
 
-
-                if (IsComplete)
+                if (row == -1)
                 {
-                    row = FindMinPositiveRatio(MatrixA, column);
-                    double pivot = MatrixA[row, column];
-
-                    _protocol.SaveStepHeader(_rows[row], _columns[column], "Пошук опорного розв'язку");
-
-                    (_columns[column], _rows[row]) = (_rows[row], _columns[column]);
-                    MatrixA = _jordan.MatrixSolver(MatrixA, pivot, row, column);
-
-
-                    _protocol.SaveTable(MatrixA, _rows, _columns);
-                    _protocol.SaveSectionHeader("ОПОРНИЙ РОЗВ'ЯЗОК: ");
-                    double[] resX = GenerateResult(MatrixA);
-                    _protocol.ResultSimplexSave(resX);
-
+                    _protocol.SaveSectionHeader("ЗНАЙДЕНО ОПОРНИЙ РОЗВ'ЯЗОК");
+                   
+                    double[] res = GenerateResult(MatrixA);
+                    _protocol.ResultSimplexSave(res);
 
                     return MatrixA;
-
                 }
-                else
+
+
+
+                int column = -1;
+
+                for (int j = 0; j < colsCount; j++)
+                    {
+                        if (MatrixA[row, j] < 0)
+                        {
+                            column = j;
+                            break;
+                        }
+                    }
+
+
+                if (column == -1)
                 {
-                    throw new Exception("Система обмежень ЛП-задачі суперечлива");
+                    throw new Exception("Система обмежень суперечлива (немає опорного розв'язку)");
                 }
 
 
-            }
-            else 
-            {
+                row = FindMinPositiveRatio(MatrixA, column);
+                      
+                double pivot = MatrixA[row, column];
+                        
                 _protocol.SaveStepHeader(_rows[row], _columns[column], "Пошук опорного розв'язку");
-                _protocol.SaveTable(MatrixA, _rows, _columns);
-                _protocol.SaveSectionHeader("ОПТИМАЛЬНИЙ РОЗВ'ЯЗОК: ");
-                double[] resX = GenerateResult(MatrixA);
+
+                      
+                (_columns[column], _rows[row]) = (_rows[row], _columns[column]);
+                      
+                MatrixA = _jordan.MatrixSolver(MatrixA, pivot, row, column);
+                       
+                _protocol.SaveTable(MatrixA, _rows, _columns);                       
+                _protocol.SaveSectionHeader("ОПОРНИЙ РОЗВ'ЯЗОК: ");                      
+                double[] resX = GenerateResult(MatrixA);                       
                 _protocol.ResultSimplexSave(resX);
 
-                return MatrixA; 
+                       
             }
-        }        
+
+
+        }
+    
         
           
         
@@ -148,8 +142,6 @@ namespace JordanExceptions
             }
 
             double[] resX = GenerateResult(MatrixA);
-            _protocol.SaveSectionHeader("ОПТИМАЛЬНИЙ РОЗВ'ЯЗОК: ");
-            _protocol.ResultSimplexSave(resX, MatrixA[rowsCount, colsCount]);
 
             resX[resX.Length-1] = MatrixA[rowsCount, colsCount];
 

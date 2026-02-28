@@ -156,17 +156,28 @@ namespace Lab1_JordanExceptions
                 _protocol.FileCleaner();
 
                 double[,] matrix = ParseToSimplexTable(txtConstraints.Text, txtZFunction.Text);
-                bool isMin = rbMax.IsChecked ?? false; 
+                bool isMax = rbMax.IsChecked ?? false; 
 
-                if (isMin) matrix = PrepareForMin(matrix);
+                if (isMax) matrix = PrepareForMax(matrix);
 
                 double[] resultX = _solver.FindOptimalSolution(matrix);
                 txtResultX.Text = $"({string.Join("; ", resultX.Take(resultX.Length - 1).Select(x => x.ToString("F2")))})";
 
-                if (isMin)
+                if (isMax){
+
+                    txtResultZ.Text = resultX[resultX.Length - 1].ToString("F2");
+                    _protocol.SaveSectionHeader("ОПТИМАЛЬНИЙ РОЗВ'ЯЗОК: ");
+                    _protocol.ResultSimplexSave(resultX, resultX[resultX.Length - 1]);
+
+                }
+                else
+                {
                     txtResultZ.Text = (-resultX[resultX.Length - 1]).ToString("F2");
-                else                
-                    txtResultZ.Text = resultX[resultX.Length-1].ToString("F2");
+                    _protocol.SaveSectionHeader("ОПТИМАЛЬНИЙ РОЗВ'ЯЗОК: ");
+                    _protocol.ResultSimplexSave(resultX, (-resultX[resultX.Length - 1]));
+
+                }
+
 
 
                 txtblk_protocol1.Text = $"Протокол обичслень створено за посиланням: {fullPath}";
@@ -177,7 +188,7 @@ namespace Lab1_JordanExceptions
             }
         }
 
-        private double[,] PrepareForMin(double[,] matrix)
+        private double[,] PrepareForMax(double[,] matrix)
         {
             int lastRow = matrix.GetLength(0) - 1;
             int lastCol = matrix.GetLength(1) - 1;
