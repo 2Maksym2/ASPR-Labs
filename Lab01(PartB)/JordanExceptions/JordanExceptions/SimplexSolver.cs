@@ -47,7 +47,7 @@ namespace JordanExceptions
                 if (row == -1)
                 {
                     _protocol.SaveSectionHeader("ЗНАЙДЕНО ОПОРНИЙ РОЗВ'ЯЗОК");
-                   
+
                     double[] res = GenerateResult(MatrixA);
                     _protocol.ResultSimplexSave(res);
 
@@ -59,13 +59,13 @@ namespace JordanExceptions
                 int column = -1;
 
                 for (int j = 0; j < colsCount; j++)
-                    {
+                {
                         if (MatrixA[row, j] < 0)
                         {
                             column = j;
                             break;
                         }
-                    }
+                }
 
 
                 if (column == -1)
@@ -110,6 +110,7 @@ namespace JordanExceptions
             int colsCount = MatrixA.GetLength(1) - 1;
 
             InitializeLabels(rowsCount, colsCount);
+
             _protocol.InputTableSave(MatrixA, _rows, _columns);
 
 
@@ -126,7 +127,7 @@ namespace JordanExceptions
                     if (MatrixA[rowsCount, j] < 0)
                     {
                         int row = FindMinPositiveRatio(MatrixA, j);
-                        if (row < 0) throw new Exception("Функція не має максимуму");
+                        if (row < 0) throw new Exception("Функція не має максимуму/мінімуму");
 
                         _protocol.SaveStepHeader(_rows[row], _columns[j], "Пошук оптимального розв'язку");
 

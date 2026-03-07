@@ -51,6 +51,7 @@
 
                     </StackPanel>
                     <TextBlock x:Name="txtblk_protocol1" TextWrapping="Wrap" Height="auto" Width="auto" IsEnabled="False" FontSize="16" Margin="38,287,397,20"/>
+                    <Button Content="Вихід" HorizontalAlignment="Left" Margin="649,287,0,0" VerticalAlignment="Top" Height="43" Width="98" FontSize="16" Click="btn_exit_Click"/>
 
                 </Grid>
             </TabItem>
