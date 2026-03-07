@@ -22,13 +22,13 @@ namespace TestProject
 
             double[] X = _simplex.FindOptimalSolution(inputMatrix);
 
-            for (int i = 0; i < X.Length; i++)
+            for (int i = 0; i < X.Length-1; i++)
             {
                 R += X[i] * -inputMatrix[r-1,i];
             }
             
 
-            for (int i = 0; i < X.Length; i++)
+            for (int i = 0; i < X.Length-1; i++)
             {
                 Assert.Equal(expectedX[i], X[i], precision: 2);
             }

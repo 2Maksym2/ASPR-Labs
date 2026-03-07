@@ -38,11 +38,14 @@ namespace Lab1_JordanExceptions
 
         }
 
+
+
         private void Btn_rank_Click(object sender, RoutedEventArgs e)
         {
             try
             {
                 _protocol.FileCleaner();
+
                 var matrixA = ParseMatrix(txtbx_A.Text);
                 int rank = _rankSolver.GetSolution(matrixA, matrixA.GetLength(0), matrixA.GetLength(1));
                 txtbx_rank.Text = rank.ToString();
@@ -55,11 +58,14 @@ namespace Lab1_JordanExceptions
             }
         }
 
+
+
         private void Btn_result_Click(object sender, RoutedEventArgs e)
         {
             try
             {
                 _protocol.FileCleaner();
+
                 var matrixA = ParseMatrix(txtbx_A.Text);
                 var vectorB = ParseVector(txtbx_b.Text);
 
@@ -75,11 +81,13 @@ namespace Lab1_JordanExceptions
                 txtblk_protocol.Text = $"Протокол обичслень створено за посиланням: {fullPath}";
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                MessageBox.Show("Помилка СЛАР: " + ex.Message);
+                MessageBox.Show("Помилка обчислення СЛАР");
             }
         }
+
+
 
         private void Btn_invert_Click(object sender, RoutedEventArgs e)
         {
@@ -94,9 +102,9 @@ namespace Lab1_JordanExceptions
                 txtblk_protocol.Text = $"Протокол обичслень створено за посиланням: {fullPath}";
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                MessageBox.Show("Матриця вироджена або сталася помилка: " + ex.Message);
+                MessageBox.Show("Матриця вироджена або сталася помилка");
             }
         }
 
@@ -156,6 +164,7 @@ namespace Lab1_JordanExceptions
                 _protocol.FileCleaner();
 
                 double[,] matrix = ParseToSimplexTable(txtConstraints.Text, txtZFunction.Text);
+              
                 bool isMax = rbMax.IsChecked ?? false; 
 
                 if (isMax) matrix = PrepareForMax(matrix);
@@ -184,6 +193,8 @@ namespace Lab1_JordanExceptions
             }
             catch (Exception ex)
             {
+                txtResultZ.Clear();
+                txtResultX.Clear();
                 MessageBox.Show($"Помилка: {ex.Message}", "Помилка розрахунку", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
