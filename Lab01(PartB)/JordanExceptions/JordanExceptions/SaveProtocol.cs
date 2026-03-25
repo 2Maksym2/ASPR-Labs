@@ -236,7 +236,7 @@ namespace JordanExceptions
                 StringBuilder sb = new StringBuilder();
                 sb.AppendLine("\nЗнайдено опорний розв’язок:");
                 sb.Append("X = (");
-                sb.Append(string.Join("; ", x.Select(val => val.ToString("F2"))));
+                sb.Append(string.Join("; ", x.Take(x.Length - 1).Select(val => val.ToString("F2"))));
                 sb.AppendLine(")");
                 sb.AppendLine(new string('-', 50));
 
