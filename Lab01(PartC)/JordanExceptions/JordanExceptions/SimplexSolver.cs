@@ -10,6 +10,8 @@ namespace JordanExceptions
 {
     public class SimplexSolver
     {
+        private int _rowsEqualityCount;
+
         private string[] _rows { get; set; }
         private string[] _columns { get; set; }
 
@@ -17,6 +19,7 @@ namespace JordanExceptions
         private readonly ISaveProtocol _protocol;
         private readonly IJordanMethod _jordan;
 
+        public int RowsEqualityCount { get; set; }
         public SimplexSolver(ISaveProtocol protocol, IJordanMethod jordan) 
         { 
             _protocol = protocol;            
@@ -198,12 +201,18 @@ namespace JordanExceptions
 
         public void InitializeLabels(int rows, int cols)
         {
-
+            int n = 0;
             _rows = new string[rows+1];
 
-            for (int i = 0; i < rows; i++)
+            for (int i = 0; i < rows-RowsEqualityCount; i++)
             {
                 _rows[i] = "y" + (i + 1);
+                n++;
+            }
+
+            for (int i = n; i < rows; i++)
+            {
+                _rows[i] = "0";
             }
 
             _rows[rows] = "Z";
