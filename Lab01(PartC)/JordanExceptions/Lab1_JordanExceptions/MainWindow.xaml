@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Lab1_JordanExceptions"
         mc:Ignorable="d"
-        Title="Lab1_PartB" Height="500" Width="800">
+        Title="Lab1_PartB" Height="655" Width="800">
     <Grid Background="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}">
         <TabControl>
             <TabItem Header="Розв'язання ЗЛП МЖВ">
@@ -29,11 +29,14 @@
                             </Grid.ColumnDefinitions>
 
                             <StackPanel Grid.Column="0">
-                                <TextBlock Text="Обмеження:" Margin="0,0,0,5" FontSize="14"/>
+                                <TextBlock Text="Нерівності:" Margin="0,0,0,5" FontSize="14"/>
                                 <TextBox x:Name="txtConstraints" Height="150" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" Padding="5"/>
+                                <TextBlock Text="Рівності:" Margin="0,0,0,5" FontSize="14"/>
+                                <TextBox x:Name="txtEquality" Height="150" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" Padding="5"/>
+
                             </StackPanel>
 
-                            <StackPanel Grid.Column="1" VerticalAlignment="Top" Margin="20,25,0,0">
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="20,0,0,0">
                                 <Button Content="Знайти оптимальний розв'язок" Height="50" FontWeight="Bold" Click="btnCalculate_Click" Width="226"/>
 
                                 <StackPanel Margin="0,20,0,0">
@@ -50,8 +53,8 @@
                         </Grid>
 
                     </StackPanel>
-                    <TextBlock x:Name="txtblk_protocol1" TextWrapping="Wrap" Height="auto" Width="auto" IsEnabled="False" FontSize="16" Margin="38,287,397,20"/>
-                    <Button Content="Вихід" HorizontalAlignment="Left" Margin="649,287,0,0" VerticalAlignment="Top" Height="43" Width="98" FontSize="16" Click="btn_exit_Click"/>
+                    <TextBlock x:Name="txtblk_protocol1" TextWrapping="Wrap" Height="auto" Width="auto" IsEnabled="False" FontSize="16" Margin="38,435,397,20"/>
+                    <Button Content="Вихід" HorizontalAlignment="Left" Margin="645,466,0,0" VerticalAlignment="Top" Height="43" Width="98" FontSize="16" Click="btn_exit_Click"/>
 
                 </Grid>
             </TabItem>

@@ -163,7 +163,7 @@ namespace Lab1_JordanExceptions
             {
                 _protocol.FileCleaner();
 
-                double[,] matrix = ParseToSimplexTable(txtConstraints.Text, txtZFunction.Text);
+                double[,] matrix = ParseToSimplexTable(txtConstraints.Text, txtEquality.Text, txtZFunction.Text);
               
                 bool isMax = rbMax.IsChecked ?? false; 
 
@@ -214,12 +214,23 @@ namespace Lab1_JordanExceptions
 
 
 
-        private double[,] ParseToSimplexTable(string constraints, string zFunc)
+        private double[,] ParseToSimplexTable(string constraints, string equality, string zFunc)
         {
-            string[] lines = constraints.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
-            int rowCount = lines.Length;
+            string[] linesConstraints = constraints.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+            string[] linesEquality = equality.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
 
-            string fullText = constraints + " " + zFunc;
+            var allLines = linesConstraints.Concat(linesEquality).ToArray();
+
+
+            int rowCountConstraints = linesConstraints.Length;
+            int rowCountEquality = linesEquality.Length;
+
+            _solver.RowsEqualityCount = rowCountEquality;
+
+            int rowCount = rowCountConstraints + rowCountEquality;
+
+
+            string fullText = constraints + " " + equality + " " + zFunc;
             var matches = Regex.Matches(fullText, @"x(\d+)");
 
             int maxVarIndex = 0;
@@ -233,15 +244,15 @@ namespace Lab1_JordanExceptions
 
             for (int i = 0; i < rowCount; i++)
             {
-                ParseVariables(lines[i], matrix, i, maxVarIndex);
+                ParseVariables(allLines[i], matrix, i, maxVarIndex);
 
-                var constMatch = Regex.Match(lines[i], @"(?:<=|>=|=)\s*(?<const>[+-]?\d+(?:\.\d+)?)");
+                var constMatch = Regex.Match(allLines[i], @"(?:<=|>=|=)\s*(?<const>[+-]?\d+(?:\.\d+)?)");
                 if (constMatch.Success)
                 {
                     matrix[i, maxVarIndex] = double.Parse(constMatch.Groups["const"].Value.Replace('.', ','));
                 }
 
-                if (lines[i].Contains(">="))
+                if (allLines[i].Contains(">="))
                 {
                     for (int j = 0; j <= maxVarIndex; j++) matrix[i, j] *= -1;
                 }
@@ -251,6 +262,8 @@ namespace Lab1_JordanExceptions
 
             return matrix;
         }
+
+
 
         private void ParseVariables(string line, double[,] matrix, int row, int maxVar)
         {
