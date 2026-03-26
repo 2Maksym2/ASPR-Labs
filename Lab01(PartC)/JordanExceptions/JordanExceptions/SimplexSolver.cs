@@ -129,7 +129,7 @@ namespace JordanExceptions
             int colsCount = MatrixA.GetLength(1) - 1;
 
             InitializeLabels(rowsCount, colsCount);
-            int totalX = MatrixA.GetLength(0);
+            int totalX = MatrixA.GetLength(1);
 
             _protocol.InputTableSave(MatrixA, Rows, Columns);
 
