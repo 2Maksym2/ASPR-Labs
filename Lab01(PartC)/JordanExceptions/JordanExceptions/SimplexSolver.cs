@@ -10,25 +10,41 @@ namespace JordanExceptions
 {
     public class SimplexSolver
     {
-        private int _rowsEqualityCount;
+        private string[] _rows;
+        private string[] _columns;
 
-        private string[] _rows { get; set; }
-        private string[] _columns { get; set; }
+
+        public int _rowsEqualityCount { get; set; }
+
+        private string[] Rows 
+        {
+            get { return _rows; }
+            set { _rows = value;}
+        }
+        private string[] Columns
+        {
+            get { return _columns; }
+            set { _columns = value; }
+        }
 
 
         private readonly ISaveProtocol _protocol;
         private readonly IJordanMethod _jordan;
+        private readonly MinimalPositiveRatioFinder _minRatio;
+        private readonly ConstraintTransformer _transformer;
 
         public int RowsEqualityCount { get; set; }
         public SimplexSolver(ISaveProtocol protocol, IJordanMethod jordan) 
         { 
             _protocol = protocol;            
             _jordan = jordan;
+            _minRatio = new MinimalPositiveRatioFinder();
+            _transformer = new ConstraintTransformer(_protocol, _jordan, this);
         }
 
 
 
-        public double[,] FindInitialFeasibleSolution(double[,] MatrixA)
+        public double[,] FindInitialFeasibleSolution(double[,] MatrixA, int totalX)
         {
 
             int rowsCount = MatrixA.GetLength(0) - 1;
@@ -51,7 +67,7 @@ namespace JordanExceptions
                 {
                     _protocol.SaveSectionHeader("ЗНАЙДЕНО ОПОРНИЙ РОЗВ'ЯЗОК");
 
-                    double[] res = GenerateResult(MatrixA);
+                    double[] res = GenerateResult(MatrixA, totalX);
                     _protocol.ResultSimplexSave(res);
 
                     return MatrixA;
@@ -77,20 +93,20 @@ namespace JordanExceptions
                 }
 
 
-                row = FindMinPositiveRatio(MatrixA, column);
+                row = _minRatio.FindMinPositiveRatio(MatrixA, column);
                       
                 double pivot = MatrixA[row, column];
                         
-                _protocol.SaveStepHeader(_rows[row], _columns[column], "Пошук опорного розв'язку");
+                _protocol.SaveStepHeader(Rows[row], Columns[column], "Пошук опорного розв'язку");
 
                       
-                (_columns[column], _rows[row]) = (_rows[row], _columns[column]);
+                (Columns[column], Rows[row]) = (Rows[row], Columns[column]);
                       
                 MatrixA = _jordan.MatrixSolver(MatrixA, pivot, row, column);
                        
-                _protocol.SaveTable(MatrixA, _rows, _columns);                       
+                _protocol.SaveTable(MatrixA, Rows, Columns);                       
                 _protocol.SaveSectionHeader("ОПОРНИЙ РОЗВ'ЯЗОК: ");                      
-                double[] resX = GenerateResult(MatrixA);                       
+                double[] resX = GenerateResult(MatrixA, totalX);                       
                 _protocol.ResultSimplexSave(resX);
 
                        
@@ -113,11 +129,18 @@ namespace JordanExceptions
             int colsCount = MatrixA.GetLength(1) - 1;
 
             InitializeLabels(rowsCount, colsCount);
+            int totalX = MatrixA.GetLength(0);
 
-            _protocol.InputTableSave(MatrixA, _rows, _columns);
+            _protocol.InputTableSave(MatrixA, Rows, Columns);
 
+            if (Rows.Contains("0"))
+            {
+                MatrixA = _transformer.ToCanonicalForm(MatrixA, ref _columns, ref _rows);
+            }
 
-            MatrixA = FindInitialFeasibleSolution(MatrixA);
+            rowsCount = MatrixA.GetLength(0) - 1;
+            colsCount = MatrixA.GetLength(1) - 1;
+            MatrixA = FindInitialFeasibleSolution(MatrixA, totalX);
 
 
             bool optimal = false;
@@ -129,15 +152,15 @@ namespace JordanExceptions
                 {
                     if (MatrixA[rowsCount, j] < 0)
                     {
-                        int row = FindMinPositiveRatio(MatrixA, j);
+                        int row = _minRatio.FindMinPositiveRatio(MatrixA, j);
                         if (row < 0) throw new Exception("Функція не має максимуму/мінімуму");
 
-                        _protocol.SaveStepHeader(_rows[row], _columns[j], "Пошук оптимального розв'язку");
+                        _protocol.SaveStepHeader(Rows[row], Columns[j], "Пошук оптимального розв'язку");
 
                         MatrixA = _jordan.MatrixSolver(MatrixA, MatrixA[row, j], row, j);
-                        (_columns[j], _rows[row]) = (_rows[row], _columns[j]);
+                        (Columns[j], Rows[row]) = (Rows[row], Columns[j]);
 
-                        _protocol.SaveTable(MatrixA, _rows, _columns);
+                        _protocol.SaveTable(MatrixA, Rows, Columns);
 
                         optimal = false;
                         break;
@@ -145,98 +168,51 @@ namespace JordanExceptions
                 }
             }
 
-            double[] resX = GenerateResult(MatrixA);
+            double[] resX = GenerateResult(MatrixA, totalX);
 
             resX[resX.Length-1] = MatrixA[rowsCount, colsCount];
 
             return resX;
         }
 
-
-
-        public int FindMinPositiveRatio(double[,] MatrixA, int column)
-        {
-            
-            double temp = 0;
-            double pivot = double.MaxValue;
-            int row = -1;
-
-            int rowsCount = MatrixA.GetLength(0) - 1;
-            int colsCount = MatrixA.GetLength(1) - 1;
-
-
-            for (int i = 0; i < rowsCount; i++)
-            {
-                if (pivot > 0)
-                {
-                    temp = pivot;
-                }
-
-
-                if (MatrixA[i, column] != 0)
-                {
-                    pivot = MatrixA[i, colsCount] / MatrixA[i, column];
-
-                    if (MatrixA[i, colsCount] == 0 && MatrixA[i, column] > 0)
-                    {
-                        row = i;
-                        break;
-                    }
-
-                }
-
-
-
-                if (pivot > 0 && pivot < temp)
-                {
-                    temp = pivot;
-                    row = i;
-                }
-            }
-            return row;
-        }
-
-
-
-
         public void InitializeLabels(int rows, int cols)
         {
             int n = 0;
-            _rows = new string[rows+1];
+            Rows = new string[rows+1];
 
             for (int i = 0; i < rows-RowsEqualityCount; i++)
             {
-                _rows[i] = "y" + (i + 1);
+                Rows[i] = "y" + (i + 1);
                 n++;
             }
 
             for (int i = n; i < rows; i++)
             {
-                _rows[i] = "0";
+                Rows[i] = "0";
             }
 
-            _rows[rows] = "Z";
+            Rows[rows] = "Z";
             
-            _columns = new string[cols+1];
+            Columns = new string[cols+1];
             for (int j = 0; j < cols; j++)
             {
-                _columns[j] = "x" + (j + 1);
+                Columns[j] = "x" + (j + 1);
             }
-            _columns[cols] = "1";           
+            Columns[cols] = "1";           
         }
 
 
-        private double[] GenerateResult(double[,] MatrixA)
+        private double[] GenerateResult(double[,] MatrixA, int totalX)
         {
             int rowsCount = MatrixA.GetLength(0) - 1;
             int colsCount = MatrixA.GetLength(1) - 1;
 
-            double[] x = new double[colsCount+1];
+            double[] x = new double[totalX];
 
 
             for (int i = 0; i < rowsCount; i++)
             {
-                string name = _rows[i];
+                string name = Rows[i];
 
                 if (name.StartsWith("x"))
                 {

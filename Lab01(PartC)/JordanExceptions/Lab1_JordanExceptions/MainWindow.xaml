@@ -29,7 +29,7 @@
                             </Grid.ColumnDefinitions>
 
                             <StackPanel Grid.Column="0">
-                                <TextBlock Text="Обмеження:" Margin="0,0,0,5" FontSize="14"/>
+                                <TextBlock Text="Нерівності:" Margin="0,0,0,5" FontSize="14"/>
                                 <TextBox x:Name="txtConstraints" Height="150" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" Padding="5"/>
                                 <TextBlock Text="Рівності:" Margin="0,0,0,5" FontSize="14"/>
                                 <TextBox x:Name="txtEquality" Height="150" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" Padding="5"/>

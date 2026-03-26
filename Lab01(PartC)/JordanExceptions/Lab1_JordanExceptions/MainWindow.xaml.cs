@@ -219,6 +219,9 @@ namespace Lab1_JordanExceptions
             string[] linesConstraints = constraints.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
             string[] linesEquality = equality.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
 
+            var allLines = linesConstraints.Concat(linesEquality).ToArray();
+
+
             int rowCountConstraints = linesConstraints.Length;
             int rowCountEquality = linesEquality.Length;
 
@@ -227,7 +230,7 @@ namespace Lab1_JordanExceptions
             int rowCount = rowCountConstraints + rowCountEquality;
 
 
-            string fullText = constraints + " " + zFunc;
+            string fullText = constraints + " " + equality + " " + zFunc;
             var matches = Regex.Matches(fullText, @"x(\d+)");
 
             int maxVarIndex = 0;
@@ -241,15 +244,15 @@ namespace Lab1_JordanExceptions
 
             for (int i = 0; i < rowCount; i++)
             {
-                ParseVariables(linesConstraints[i], matrix, i, maxVarIndex);
+                ParseVariables(allLines[i], matrix, i, maxVarIndex);
 
-                var constMatch = Regex.Match(linesConstraints[i], @"(?:<=|>=|=)\s*(?<const>[+-]?\d+(?:\.\d+)?)");
+                var constMatch = Regex.Match(allLines[i], @"(?:<=|>=|=)\s*(?<const>[+-]?\d+(?:\.\d+)?)");
                 if (constMatch.Success)
                 {
                     matrix[i, maxVarIndex] = double.Parse(constMatch.Groups["const"].Value.Replace('.', ','));
                 }
 
-                if (linesConstraints[i].Contains(">="))
+                if (allLines[i].Contains(">="))
                 {
                     for (int j = 0; j <= maxVarIndex; j++) matrix[i, j] *= -1;
                 }
