@@ -30,9 +30,14 @@ Lab1(PartB) — це комплексний десктопний додаток 
 
 
 Технології
+
 – Мова: C# (.NET 6 / .NET 8)
+
 – UI Framework: WPF (Windows Presentation Foundation)
+
 – Середовище розробки: Visual Studio 2022
+
+
 
 Тестування програми 
 
