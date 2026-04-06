@@ -39,14 +39,27 @@
                             <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="20,0,0,0">
                                 <Button Content="Знайти оптимальний розв'язок" Height="50" FontWeight="Bold" Click="btnCalculate_Click" Width="226"/>
 
-                                <StackPanel Margin="0,20,0,0">
-                                    <StackPanel Orientation="Horizontal" Margin="0,5">
+                                <StackPanel Margin="0,20,0,0" Height="171">
+                                    <TextBlock Text ="Дробовий розв`язок лінійної задачі"  VerticalAlignment="Center"/>
+
+                                    <StackPanel Orientation="Horizontal">
                                         <TextBlock Text="X =" Width="30" VerticalAlignment="Center"/>
                                         <TextBox x:Name="txtResultX" Width="200" Height="25" IsReadOnly="True" VerticalContentAlignment="Center" IsEnabled="False"/>
                                     </StackPanel>
                                     <StackPanel Orientation="Horizontal" Margin="0,5">
                                         <TextBlock Text="Z =" Width="30" VerticalAlignment="Center"/>
                                         <TextBox x:Name="txtResultZ" Width="200" Height="25" IsReadOnly="True" VerticalContentAlignment="Center" IsEnabled="False"/>
+                                    </StackPanel>
+
+                                    <TextBlock Text ="Цілий розв`язок лінійної задачі"  VerticalAlignment="Center"/>
+
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="X =" Width="30" VerticalAlignment="Center"/>
+                                        <TextBox x:Name="txtIntResultX" Width="200" Height="25" IsReadOnly="True" VerticalContentAlignment="Center" IsEnabled="False"/>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0,5">
+                                        <TextBlock Text="Z =" Width="30" VerticalAlignment="Center"/>
+                                        <TextBox x:Name="txtIntResultZ" Width="200" Height="25" IsReadOnly="True" VerticalContentAlignment="Center" IsEnabled="False"/>
                                     </StackPanel>
                                 </StackPanel>
                             </StackPanel>

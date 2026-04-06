@@ -10,18 +10,18 @@ namespace JordanExceptions
 {
     public class SimplexSolver
     {
-        private string[] _rows;
-        private string[] _columns;
-
+        protected string[] _rows;
+        protected string[] _columns;
+        protected double[,] LastMatrix;
 
         public int _rowsEqualityCount { get; set; }
 
-        private string[] Rows 
+        protected string[] Rows
         {
             get { return _rows; }
             set { _rows = value;}
         }
-        private string[] Columns
+        protected string[] Columns
         {
             get { return _columns; }
             set { _columns = value; }
@@ -172,11 +172,15 @@ namespace JordanExceptions
 
             resX[resX.Length-1] = MatrixA[rowsCount, colsCount];
 
+            this.LastMatrix = MatrixA;
             return resX;
         }
 
         public void InitializeLabels(int rows, int cols)
         {
+            if (Rows != null) return;
+
+            
             int n = 0;
             Rows = new string[rows+1];
 
@@ -230,7 +234,14 @@ namespace JordanExceptions
                 }
             }
 
+
             return x;
+        }
+        public void Reset()
+        {
+            _rows = null;
+            _columns = null;
+            LastMatrix = null;
         }
     }
 }

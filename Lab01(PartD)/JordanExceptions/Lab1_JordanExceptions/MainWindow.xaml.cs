@@ -21,6 +21,7 @@ namespace Lab1_JordanExceptions
         private readonly LinearSolver _linearSolver;
         private readonly IMatrixInvertor _invertor;
         private readonly ISaveProtocol _protocol;
+        private readonly GomorySimplex _intsolver;
         private string fullPath { get; set; }
 
         public MainWindow()
@@ -33,7 +34,7 @@ namespace Lab1_JordanExceptions
             _invertor = new MatrixInvertor(jordan, _protocol);
             _linearSolver = new LinearSolver(_protocol, _invertor);
             _solver = new SimplexSolver(_protocol, jordan);
-
+            _intsolver = new GomorySimplex(_protocol, jordan);
             fullPath = System.IO.Path.GetFullPath("Protocol.txt");
 
         }
@@ -169,21 +170,37 @@ namespace Lab1_JordanExceptions
 
                 if (isMax) matrix = PrepareForMax(matrix);
 
+                _solver.Reset();
+
                 double[] resultX = _solver.FindOptimalSolution(matrix);
+                double[] resultIntX = _intsolver.Solver(matrix);
+
                 txtResultX.Text = $"({string.Join("; ", resultX.Take(resultX.Length - 1).Select(x => x.ToString("F2")))})";
+                txtIntResultX.Text = $"({string.Join("; ", resultIntX.Take(resultIntX.Length - 1).Select(x => x.ToString("F2")))})";
+
 
                 if (isMax){
 
                     txtResultZ.Text = resultX[resultX.Length - 1].ToString("F2");
-                    _protocol.SaveSectionHeader("ОПТИМАЛЬНИЙ РОЗВ'ЯЗОК: ");
+                    _protocol.SaveSectionHeader("ОПТИМАЛЬНИЙ ДРОБОВИЙ РОЗВ'ЯЗОК: ");
                     _protocol.ResultSimplexSave(resultX, resultX[resultX.Length - 1]);
+
+
+                    txtIntResultZ.Text = resultIntX[resultIntX.Length - 1].ToString("F2");
+                    _protocol.SaveSectionHeader("ОПТИМАЛЬНИЙ ЦІЛИЙ РОЗВ'ЯЗОК: ");
+                    _protocol.ResultSimplexSave(resultIntX, resultIntX[resultIntX.Length - 1]);
 
                 }
                 else
                 {
                     txtResultZ.Text = (-resultX[resultX.Length - 1]).ToString("F2");
-                    _protocol.SaveSectionHeader("ОПТИМАЛЬНИЙ РОЗВ'ЯЗОК: ");
+                    _protocol.SaveSectionHeader("ОПТИМАЛЬНИЙ ЦІЛИЙ РОЗВ'ЯЗОК: ");
                     _protocol.ResultSimplexSave(resultX, (-resultX[resultX.Length - 1]));
+
+
+                    txtIntResultZ.Text = (-resultIntX[resultIntX.Length - 1]).ToString("F2");
+                    _protocol.SaveSectionHeader("ОПТИМАЛЬНИЙ ДРОБОВИЙ РОЗВ'ЯЗОК: ");
+                    _protocol.ResultSimplexSave(resultIntX, (-resultIntX[resultIntX.Length - 1]));
 
                 }
 
@@ -195,6 +212,8 @@ namespace Lab1_JordanExceptions
             {
                 txtResultZ.Clear();
                 txtResultX.Clear();
+                txtIntResultZ.Clear();
+                txtIntResultX.Clear();
                 MessageBox.Show($"Помилка: {ex.Message}", "Помилка розрахунку", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
