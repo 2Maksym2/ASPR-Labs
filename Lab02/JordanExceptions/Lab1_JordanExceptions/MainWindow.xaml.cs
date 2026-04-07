@@ -229,7 +229,8 @@ namespace Lab1_JordanExceptions
                 bool isMax = rbMax1.IsChecked ?? false;
 
                 if (isMax) matrix = PrepareForMax(matrix);
-
+                
+                _solver.Reset();
                 _dualsolver.Reset();
 
                 double[] resultX = _solver.FindOptimalSolution(matrix);
