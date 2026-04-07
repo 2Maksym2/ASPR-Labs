@@ -10,12 +10,7 @@ namespace JordanExceptions
 {
     public class GomorySimplex : SimplexSolver
     {
-        private readonly ISaveProtocol _protocol;
-        public GomorySimplex(ISaveProtocol protocol, IJordanMethod jordan)
-        : base(protocol, jordan)
-        {
-            _protocol = protocol;
-        }
+        public GomorySimplex(ISaveProtocol protocol, IJordanMethod jordan) : base(protocol, jordan) { }
 
         public double[] Solver(double[,] MatrixA)
         {

@@ -8,9 +8,79 @@
         Title="Lab1_PartB" Height="655" Width="800">
     <Grid Background="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}">
         <TabControl>
+            <TabItem Header="Роз'язання двоїстої задачі">
+                <Grid Background="White">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="213*"/>
+                        <ColumnDefinition Width="581*"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Margin="20,20,20,20" Grid.ColumnSpan="2">
+
+                        <StackPanel Orientation="Horizontal" Margin="0,10">
+                            <TextBlock Text="Z =" VerticalAlignment="Center" Margin="0,0,10,0" FontSize="16"/>
+                            <TextBox x:Name="txtZFunction1" Width="300" Height="30" VerticalContentAlignment="Center"/>
+
+                            <StackPanel Orientation="Horizontal" Margin="20,0,0,0">
+                                <RadioButton Content="min" IsChecked="True" x:Name="rbMin1" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                <RadioButton Content="max" x:Name="rbMax1" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <Grid Margin="0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="300"/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Нерівності:" Margin="0,0,0,5" FontSize="14"/>
+                                <TextBox x:Name="txtConstraints1" Height="194" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" Padding="5"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="20,0,0,0">
+                                <Button Content="Знайти оптимальний розв'язок" Height="50" FontWeight="Bold" Click="btnCalculate_Click1" Width="226"/>
+
+                                <StackPanel Margin="0,20,0,0" Height="171">
+                                    <TextBlock Text ="Прямий розв`язок лінійної задачі"  VerticalAlignment="Center"/>
+
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="X =" Width="30" VerticalAlignment="Center"/>
+                                        <TextBox x:Name="txtResultX1" Width="200" Height="25" IsReadOnly="True" VerticalContentAlignment="Center" IsEnabled="False"/>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0,5">
+                                        <TextBlock Text="Z =" Width="30" VerticalAlignment="Center"/>
+                                        <TextBox x:Name="txtResultZ1" Width="200" Height="25" IsReadOnly="True" VerticalContentAlignment="Center" IsEnabled="False"/>
+                                    </StackPanel>
+                                    
+                                    <TextBlock Text ="Двоїстий розв`язок лінійної задачі"  VerticalAlignment="Center"/>
+
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="U =" Width="30" VerticalAlignment="Center"/>
+                                            <TextBox x:Name="txtResultU" Width="200" Height="25" IsReadOnly="True" VerticalContentAlignment="Center" IsEnabled="False"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Margin="0,5">
+                                            <TextBlock Text="W =" Width="30" VerticalAlignment="Center"/>
+                                            <TextBox x:Name="txtResultW" Width="200" Height="25" IsReadOnly="True" VerticalContentAlignment="Center" IsEnabled="False"/>
+                                        </StackPanel>
+                                   
+                                    </StackPanel>
+                                </StackPanel>
+                        </Grid>
+
+                    </StackPanel>
+                    <TextBlock x:Name="txtblk_protocol2" TextWrapping="Wrap" Height="auto" Width="auto" IsEnabled="False" FontSize="16" Margin="38,329,397,126" Grid.ColumnSpan="2"/>
+                    <Button Content="Вихід" HorizontalAlignment="Left" Margin="431,407,0,0" VerticalAlignment="Top" Height="43" Width="98" FontSize="16" Click="btn_exit_Click" Grid.Column="1"/>
+
+                </Grid>
+            </TabItem>
+
             <TabItem Header="Розв'язання ЗЛП МЖВ">
                 <Grid Background="White">
-                    <StackPanel Margin="20">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="31*"/>
+                        <ColumnDefinition Width="366*"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Margin="20,20,20,20" Grid.ColumnSpan="2">
 
                         <StackPanel Orientation="Horizontal" Margin="0,10">
                             <TextBlock Text="Z =" VerticalAlignment="Center" Margin="0,0,10,0" FontSize="16"/>
@@ -66,8 +136,8 @@
                         </Grid>
 
                     </StackPanel>
-                    <TextBlock x:Name="txtblk_protocol1" TextWrapping="Wrap" Height="auto" Width="auto" IsEnabled="False" FontSize="16" Margin="38,435,397,20"/>
-                    <Button Content="Вихід" HorizontalAlignment="Left" Margin="645,466,0,0" VerticalAlignment="Top" Height="43" Width="98" FontSize="16" Click="btn_exit_Click"/>
+                    <TextBlock x:Name="txtblk_protocol1" TextWrapping="Wrap" Height="auto" Width="auto" IsEnabled="False" FontSize="16" Margin="38,435,397,20" Grid.ColumnSpan="2"/>
+                    <Button Content="Вихід" HorizontalAlignment="Left" Margin="583,466,0,0" VerticalAlignment="Top" Height="43" Width="98" FontSize="16" Click="btn_exit_Click" Grid.Column="1"/>
 
                 </Grid>
             </TabItem>
