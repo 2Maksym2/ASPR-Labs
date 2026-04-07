@@ -164,34 +164,39 @@ namespace JordanExceptions
 
 
         private string FormatSimplexTable(double[,] matrix, string[] rows, string[] columns)
-        {            
+        {
             StringBuilder sb = new StringBuilder();
             int rCount = matrix.GetLength(0);
             int cCount = matrix.GetLength(1);
 
-            sb.Append("\t");
+            const int labelWidth = 12;
+            const int colWidth = 10;
+
+            sb.Append(new string(' ', labelWidth));
             for (int j = 0; j < cCount; j++)
             {
                 string label = columns[j];
-                string header = (label == "1" || label == "Z") ? label : "-" + label;
-                sb.Append($"{header}\t");
+                string header = (label.Contains("1") || label.Contains("Z") || label.Contains("W"))
+                                ? label
+                                : "-" + label;
+
+                sb.Append(header.PadLeft(colWidth));
             }
-            sb.AppendLine("\n" + new string('-', 50));
+            sb.AppendLine("\n" + new string('-', labelWidth + (cCount * colWidth)));
 
             for (int i = 0; i < rCount; i++)
             {
-                string rowLabel = rows[i];
-                sb.Append($"{rowLabel} =\t");
+                string rowLabel = rows[i] + " =";
+                sb.Append(rowLabel.PadRight(labelWidth));
+
                 for (int j = 0; j < cCount; j++)
                 {
-                    sb.Append($"{matrix[i, j]:F2}\t");
+                    sb.Append(matrix[i, j].ToString("F2").PadLeft(colWidth));
                 }
                 sb.AppendLine();
             }
             return sb.ToString();
         }
-
-
 
         public void InputTableSave(double[,] matrix, string[] rows, string[] columns)
         {
@@ -244,6 +249,7 @@ namespace JordanExceptions
             }
         }
 
+
         public void ResultSimplexSave(double[] x, double zValue)
         {
             lock (_path)
@@ -257,6 +263,21 @@ namespace JordanExceptions
                 File.AppendAllText(_path, sb.ToString());
             }
         }
+
+        public void ResultDualSimplexSave(double[] x, double zValue)
+        {
+            lock (_path)
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.AppendLine("\nРезультат:");
+                sb.Append("U = (");
+                sb.Append(string.Join("; ", x.Take(x.Length - 1).Select(v => v.ToString("F2"))));
+                sb.AppendLine(")");
+                sb.AppendLine($"W = {zValue:F2}\n");
+                File.AppendAllText(_path, sb.ToString());
+            }
+        }
+
 
         public void SaveSectionHeader(string message)
         {

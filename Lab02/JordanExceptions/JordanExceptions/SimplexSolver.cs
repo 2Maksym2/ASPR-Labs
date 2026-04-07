@@ -28,10 +28,10 @@ namespace JordanExceptions
         }
 
 
-        private readonly ISaveProtocol _protocol;
-        private readonly IJordanMethod _jordan;
-        private readonly MinimalPositiveRatioFinder _minRatio;
-        private readonly ConstraintTransformer _transformer;
+        protected readonly ISaveProtocol _protocol;
+        protected readonly IJordanMethod _jordan;
+        protected readonly MinimalPositiveRatioFinder _minRatio;
+        protected readonly ConstraintTransformer _transformer;
 
         public int RowsEqualityCount { get; set; }
         public SimplexSolver(ISaveProtocol protocol, IJordanMethod jordan) 
@@ -44,7 +44,7 @@ namespace JordanExceptions
 
 
 
-        public double[,] FindInitialFeasibleSolution(double[,] MatrixA, int totalX)
+        public virtual double[,] FindInitialFeasibleSolution(double[,] MatrixA, int totalX)
         {
 
             int rowsCount = MatrixA.GetLength(0) - 1;
@@ -99,8 +99,8 @@ namespace JordanExceptions
                         
                 _protocol.SaveStepHeader(Rows[row], Columns[column], "Пошук опорного розв'язку");
 
-                      
-                (Columns[column], Rows[row]) = (Rows[row], Columns[column]);
+                SwapLabels(row, column);
+
                       
                 MatrixA = _jordan.MatrixSolver(MatrixA, pivot, row, column);
                        
@@ -122,7 +122,7 @@ namespace JordanExceptions
 
 
 
-        public double[] FindOptimalSolution(double[,] MatrixA)
+        public virtual double[] FindOptimalSolution(double[,] MatrixA)
         {
 
             int rowsCount = MatrixA.GetLength(0) - 1;
@@ -158,7 +158,7 @@ namespace JordanExceptions
                         _protocol.SaveStepHeader(Rows[row], Columns[j], "Пошук оптимального розв'язку");
 
                         MatrixA = _jordan.MatrixSolver(MatrixA, MatrixA[row, j], row, j);
-                        (Columns[j], Rows[row]) = (Rows[row], Columns[j]);
+                        SwapLabels(row, j);
 
                         _protocol.SaveTable(MatrixA, Rows, Columns);
 
@@ -176,7 +176,7 @@ namespace JordanExceptions
             return resX;
         }
 
-        public void InitializeLabels(int rows, int cols)
+        public virtual void InitializeLabels(int rows, int cols)
         {
             if (Rows != null) return;
 
@@ -206,7 +206,7 @@ namespace JordanExceptions
         }
 
 
-        private double[] GenerateResult(double[,] MatrixA, int totalX)
+        protected double[] GenerateResult(double[,] MatrixA, int totalX)
         {
             int rowsCount = MatrixA.GetLength(0) - 1;
             int colsCount = MatrixA.GetLength(1) - 1;
@@ -237,6 +237,14 @@ namespace JordanExceptions
 
             return x;
         }
+
+
+
+        protected virtual void SwapLabels(int row, int col)
+        {
+            (Columns[col], Rows[row]) = (Rows[row], Columns[col]);
+        }
+
         public void Reset()
         {
             _rows = null;

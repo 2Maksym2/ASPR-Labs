@@ -18,6 +18,7 @@ namespace Lab1_JordanExceptions
     {
         private readonly RankSolver _rankSolver;
         private readonly SimplexSolver _solver;
+        private readonly DualSimplexSolver _dualsolver;
         private readonly LinearSolver _linearSolver;
         private readonly IMatrixInvertor _invertor;
         private readonly ISaveProtocol _protocol;
@@ -35,6 +36,7 @@ namespace Lab1_JordanExceptions
             _linearSolver = new LinearSolver(_protocol, _invertor);
             _solver = new SimplexSolver(_protocol, jordan);
             _intsolver = new GomorySimplex(_protocol, jordan);
+            _dualsolver = new DualSimplexSolver(_protocol, jordan);
             fullPath = System.IO.Path.GetFullPath("Protocol.txt");
 
         }
@@ -217,6 +219,53 @@ namespace Lab1_JordanExceptions
                 MessageBox.Show($"Помилка: {ex.Message}", "Помилка розрахунку", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
+        private void btnCalculate_Click1(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+
+                double[,] matrix = ParseToSimplexTable(txtConstraints1.Text, "", txtZFunction1.Text);
+                bool isMax = rbMax1.IsChecked ?? false;
+
+                if (isMax) matrix = PrepareForMax(matrix);
+
+                _dualsolver.Reset();
+
+                double[] resultX = _solver.FindOptimalSolution(matrix);
+             
+                _protocol.FileCleaner();
+
+
+                double[] resultU = _dualsolver.FindOptimalSolution(matrix);
+
+                double Z = resultX[resultX.Length - 1];
+                double finalZW = isMax ? Z : -Z;
+
+                txtResultX1.Text = $"X = ({string.Join("; ", resultX.Take(resultX.Length - 1).Select(x => x.ToString("F2")))})";
+                txtResultZ1.Text = $"Z = {finalZW.ToString("F2")}";
+
+                txtResultU.Text = $"U = ({string.Join("; ", resultU.Take(resultU.Length - 1).Select(u => u.ToString("F2")))})";
+                txtResultW.Text = $"W = {finalZW.ToString("F2")}";
+
+                _protocol.SaveSectionHeader("ОПТИМАЛЬНІ РОЗВ'ЯЗКИ");
+                _protocol.SaveSectionHeader("Пряма задача (X, Z):");
+                _protocol.ResultSimplexSave(resultX, finalZW);
+
+                _protocol.SaveSectionHeader("Двоїста задача (U, W):");
+                _protocol.ResultDualSimplexSave(resultU, finalZW);
+
+                txtblk_protocol2.Text = $"Протокол створено: {fullPath}";
+            }
+            catch (Exception ex)
+            {
+                txtResultX1.Clear(); txtResultZ1.Clear();
+                txtResultU.Clear(); txtResultW.Clear();
+                MessageBox.Show(ex.Message, "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+
 
         private double[,] PrepareForMax(double[,] matrix)
         {

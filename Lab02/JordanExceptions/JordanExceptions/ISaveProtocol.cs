@@ -13,7 +13,7 @@
         void SaveStepHeader(string rowName, string colName, string title = "");
         void SaveTable(double[,] matrix, string[] rows, string[] columns);
 
-
+        void ResultDualSimplexSave(double[] x, double zValue);
         void ResultSimplexSave(double[] x);
         void ResultSimplexSave(double[] x, double zValue);
         void ResultSave(int stepNumber, double[,] x, double[,] a);
