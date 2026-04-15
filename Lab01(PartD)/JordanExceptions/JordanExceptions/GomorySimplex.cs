@@ -37,16 +37,20 @@ namespace JordanExceptions
 
                 MatrixA = LastMatrix;
 
-                for (int i = 0; i < x.Length-1; i++)
+                bool allInteger = true;
+              
+                for (int i = 0; i < x.Length; i++)
                 {
                     if (Math.Abs(x[i] - Math.Round(x[i])) > epsilon)
                     {
-                        double[] Constraints = GenerateGomoryCut(FindMaxFractionalRow(x));
-                        MatrixA = AddConstraintToTable(MatrixA, Constraints);
-                        continue;
+                        allInteger = false;
+                        int fractionalRowIndex = FindMaxFractionalRow(x);
+                        double[] cut = GenerateGomoryCut(fractionalRowIndex);
+                        MatrixA = AddConstraintToTable(MatrixA, cut);
+                        break;
                     }
-                    else return fullSolution;
                 }
+                if (allInteger) return fullSolution;
 
 
             }                        
@@ -55,20 +59,24 @@ namespace JordanExceptions
 
         public int FindMaxFractionalRow(double[] x)
         {
-            int row = 0;
-            double temp = double.MinValue;
-           
-            for (int i = 0; i < x.Length-1; i++)
+            int bestRow = -1;
+            double maxFraction = 0;
+            double epsilon = 1e-9;
+
+            for (int i = 0; i < Rows.Length - 1; i++)
             {
-                if (x[i]%1 > temp)
+                double bValue = LastMatrix[i, LastMatrix.GetLength(1) - 1];
+                double fraction = bValue - Math.Floor(bValue + epsilon);
+
+                if (fraction > epsilon && fraction > maxFraction)
                 {
-                    temp = x[i] % 1;
-                    row = Array.FindIndex(Rows, x => x == "x" + (i+1));
+                    maxFraction = fraction;
+                    bestRow = i;
                 }
             }
 
-
-            return row;
+            if (bestRow == -1) throw new Exception(" Цілочисельного розв'язку немає ");
+            return bestRow;
         }
 
         public double[] GenerateGomoryCut(int row)
