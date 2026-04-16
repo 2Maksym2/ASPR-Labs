@@ -112,6 +112,9 @@ namespace JordanExceptions
                 int column = -1;
                 for (int j = 0; j < colsCount; j++)
                 {
+                    if (_columns[j].Contains("0"))
+                        continue;
+
                     if (MatrixA[row, j] < 0)
                     {
                         column = j;
@@ -160,7 +163,7 @@ namespace JordanExceptions
 
             if (_rows.Contains("0"))
             {
-                MatrixA = _transformer.ToCanonicalForm(MatrixA, ref _columns, ref _rows);
+                MatrixA = _transformer.ToCanonicalForm(MatrixA, ref _columns, ref _rows, ref DualColumns, ref DualRows);
 
                 rowsCount = MatrixA.GetLength(0) - 1;
                 colsCount = MatrixA.GetLength(1) - 1;
@@ -177,6 +180,10 @@ namespace JordanExceptions
 
                 for (int j = 0; j < colsCount; j++)
                 {
+                    if (_columns[j] == "0")
+                    {
+                        continue;
+                    }
                     if (MatrixA[rowsCount, j] < 0)
                     {
                         int row = _minRatio.FindMinPositiveRatio(MatrixA, j);
