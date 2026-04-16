@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Lab1_JordanExceptions"
         mc:Ignorable="d"
-        Title="Lab1_PartB" Height="655" Width="800">
+        Title="Lab2" Height="655" Width="800">
     <Grid Background="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}">
         <TabControl>
             <TabItem Header="Роз'язання двоїстої задачі">
