@@ -232,6 +232,7 @@ namespace Lab1_JordanExceptions
                 
                 _solver.Reset();
                 _dualsolver.Reset();
+                _protocol.FileCleaner();
 
                 double[] resultX = _solver.FindOptimalSolution(matrix);
              

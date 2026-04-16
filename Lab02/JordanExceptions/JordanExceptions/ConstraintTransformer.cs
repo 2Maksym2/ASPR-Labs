@@ -61,6 +61,11 @@ namespace JordanExceptions
                     int colsCount = MatrixA.GetLength(1) -1;
                     int r = Array.IndexOf(_rows, "0");
 
+                    if (MatrixA[r, colsCount] < 0)
+                    {
+                        for (int j = 0; j <= colsCount; j++) MatrixA[r, j] *= -1;
+                    }
+
                     int column = -1;
 
                     for (int j = 0; j < colsCount; j++)
