@@ -225,7 +225,7 @@ namespace Lab1_JordanExceptions
             try
             {
 
-                double[,] matrix = ParseToSimplexTable(txtConstraints1.Text, "", txtZFunction1.Text);
+                double[,] matrix = ParseToSimplexTable(txtConstraints1.Text, txtEquality1.Text, txtZFunction1.Text);
                 bool isMax = rbMax1.IsChecked ?? false;
 
                 if (isMax) matrix = PrepareForMax(matrix);
@@ -295,6 +295,7 @@ namespace Lab1_JordanExceptions
             int rowCountEquality = linesEquality.Length;
 
             _solver.RowsEqualityCount = rowCountEquality;
+            _dualsolver.RowsEqualityCount = rowCountEquality;
 
             int rowCount = rowCountConstraints + rowCountEquality;
 

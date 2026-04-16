@@ -5,11 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Lab1_JordanExceptions"
         mc:Ignorable="d"
-        Title="Lab2" Height="655" Width="800">
+        Title="Lab2" Height="753" Width="800">
     <Grid Background="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}">
         <TabControl>
             <TabItem Header="Роз'язання двоїстої задачі">
-                <Grid Background="White">
+                <Grid Background="White" Height="715">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="213*"/>
                         <ColumnDefinition Width="581*"/>
@@ -35,6 +35,8 @@
                             <StackPanel Grid.Column="0">
                                 <TextBlock Text="Нерівності:" Margin="0,0,0,5" FontSize="14"/>
                                 <TextBox x:Name="txtConstraints1" Height="194" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" Padding="5"/>
+                                <TextBlock Text="Рівності:" Margin="0,0,0,5" FontSize="14"/>
+                                <TextBox x:Name="txtEquality1" Height="150" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" Padding="5"/>
                             </StackPanel>
 
                             <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="20,0,0,0">
@@ -51,24 +53,24 @@
                                         <TextBlock Text="Z =" Width="30" VerticalAlignment="Center"/>
                                         <TextBox x:Name="txtResultZ1" Width="200" Height="25" IsReadOnly="True" VerticalContentAlignment="Center" IsEnabled="False"/>
                                     </StackPanel>
-                                    
+
                                     <TextBlock Text ="Двоїстий розв`язок лінійної задачі"  VerticalAlignment="Center"/>
 
-                                        <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="U =" Width="30" VerticalAlignment="Center"/>
-                                            <TextBox x:Name="txtResultU" Width="200" Height="25" IsReadOnly="True" VerticalContentAlignment="Center" IsEnabled="False"/>
-                                        </StackPanel>
-                                        <StackPanel Orientation="Horizontal" Margin="0,5">
-                                            <TextBlock Text="W =" Width="30" VerticalAlignment="Center"/>
-                                            <TextBox x:Name="txtResultW" Width="200" Height="25" IsReadOnly="True" VerticalContentAlignment="Center" IsEnabled="False"/>
-                                        </StackPanel>
-                                   
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="U =" Width="30" VerticalAlignment="Center"/>
+                                        <TextBox x:Name="txtResultU" Width="200" Height="25" IsReadOnly="True" VerticalContentAlignment="Center" IsEnabled="False"/>
                                     </StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0,5">
+                                        <TextBlock Text="W =" Width="30" VerticalAlignment="Center"/>
+                                        <TextBox x:Name="txtResultW" Width="200" Height="25" IsReadOnly="True" VerticalContentAlignment="Center" IsEnabled="False"/>
+                                    </StackPanel>
+
                                 </StackPanel>
+                            </StackPanel>
                         </Grid>
 
                     </StackPanel>
-                    <TextBlock x:Name="txtblk_protocol2" TextWrapping="Wrap" Height="auto" Width="auto" IsEnabled="False" FontSize="16" Margin="38,329,397,126" Grid.ColumnSpan="2"/>
+                    <TextBlock x:Name="txtblk_protocol2" TextWrapping="Wrap" Height="auto" Width="auto" IsEnabled="False" FontSize="16" Margin="20,513,414,20" Grid.ColumnSpan="2"/>
                     <Button Content="Вихід" HorizontalAlignment="Left" Margin="431,407,0,0" VerticalAlignment="Top" Height="43" Width="98" FontSize="16" Click="btn_exit_Click" Grid.Column="1"/>
 
                 </Grid>

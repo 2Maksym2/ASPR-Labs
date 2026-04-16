@@ -14,7 +14,6 @@ namespace JordanExceptions
         protected string[] _columns;
         protected double[,] LastMatrix;
 
-        public int _rowsEqualityCount { get; set; }
 
         protected string[] Rows
         {
@@ -79,7 +78,7 @@ namespace JordanExceptions
 
                 for (int j = 0; j < colsCount; j++)
                 {
-                        if (MatrixA[row, j] < 0)
+                    if (MatrixA[row, j] < 0)
                         {
                             column = j;
                             break;
@@ -180,7 +179,6 @@ namespace JordanExceptions
         {
             if (Rows != null) return;
 
-            
             int n = 0;
             Rows = new string[rows+1];
 
