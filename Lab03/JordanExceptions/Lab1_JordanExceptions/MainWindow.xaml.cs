@@ -23,6 +23,8 @@ namespace Lab1_JordanExceptions
         private readonly IMatrixInvertor _invertor;
         private readonly ISaveProtocol _protocol;
         private readonly GomorySimplex _intsolver;
+        private readonly MatrixAnalyzer _analyzer;
+
         private string fullPath { get; set; }
 
         public MainWindow()
@@ -37,6 +39,8 @@ namespace Lab1_JordanExceptions
             _solver = new SimplexSolver(_protocol, jordan);
             _intsolver = new GomorySimplex(_protocol, jordan);
             _dualsolver = new DualSimplexSolver(_protocol, jordan);
+            _analyzer = new MatrixAnalyzer();
+
             fullPath = System.IO.Path.GetFullPath("Protocol.txt");
 
         }
@@ -268,6 +272,135 @@ namespace Lab1_JordanExceptions
         }
 
 
+        private void btnCalculate_Click2(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                _analyzer.InactiveRows.Clear();
+                _analyzer.InactiveCols.Clear();
+
+                _protocol.FileCleaner();
+
+                var matrixA = ParseMatrix(txtMatrix.Text);
+
+                _solver.Reset();
+                _dualsolver.Reset();
+                _protocol.FileCleaner();
+
+                int columns = matrixA.GetLength(1);
+                int rows = matrixA.GetLength(0); 
+
+                double[] resultX = new double[rows];
+                double[] resultU = new double[columns];
+
+                double[] result = _analyzer.PureStrategy(matrixA);
+
+                if (result != null)
+                {
+                    int bestRow = (int)result[0];
+                    int bestCol = (int)result[1];
+
+                    for (int i = 0; i < resultX.Length; i++)
+                    {
+                        resultX[i] = (i == bestRow) ? 1.0 : 0.0;
+                    }
+
+                    for (int i = 0; i < resultU.Length; i++)
+                    {
+                        resultU[i] = (i == bestCol) ? 1.0 : 0.0;
+                    }
+
+                    txtPlayer1Result.Text = $"{string.Join("; ", resultX.Select(u => u.ToString("F2")))}";
+                    txtPlayer2Result.Text = $"{string.Join("; ", resultU.Select(x => x.ToString("F2")))}";
+                    txtV.Text = $"V = {result[2].ToString("F2")}";
+
+                    txtblk_protocol3.Text = $"Протокол обичслень створено за посиланням: {fullPath}";
+
+                }
+                else
+                {if ((columns == 2 && rows > columns) || (columns > rows && rows == 2))
+                    {
+                        matrixA = _analyzer.SimplifyMatrix(matrixA);
+                    }
+                    
+
+                    double minVal = matrixA.Cast<double>().Min();
+                    double k = 0;
+                    if (minVal < 0)
+                    {
+                        k = -minVal;
+
+                        for (int i = 0; i < rows; i++)
+                        {
+                            for (int j = 0; j < columns; j++)
+                            {
+                                matrixA[i, j] += k;
+                            }
+                        }
+                    }
+
+                    matrixA = PrepareExtendedMatrix(matrixA);
+
+                    double[] rawX = _solver.FindOptimalSolution(matrixA);
+                   
+
+                    _protocol.FileCleaner();
+
+
+                    double[] rawU = _dualsolver.FindOptimalSolution(matrixA);
+
+
+                    double Z = rawX[rawX.Length - 1];
+
+                    resultX = new double[rows];
+                    resultU = new double[columns];
+
+                    int rowIdx = 0;
+                    for (int i = 0; i < columns; i++)
+                    {
+                        if (!_analyzer.InactiveCols.Contains(i))
+                        {
+                            resultU[i] = rawX[rowIdx] / Z;
+                            rowIdx++;
+                        }
+                        else resultU[i] = 0;
+                    }
+
+                    int colIdx = 0;
+                    for (int j = 0; j < rows; j++)
+                    {
+                        if (!_analyzer.InactiveRows.Contains(j))
+                        {
+                            resultX[j] = rawU[colIdx] / Z;
+                            colIdx++;
+                        }
+                        else resultX[j] = 0;
+                    }
+
+                    txtPlayer1Result.Text = $"{string.Join("; ", resultX.Select(u => u.ToString("F2")))}";
+                    txtPlayer2Result.Text = $"{string.Join("; ", resultU.Select(x => x.ToString("F2")))}";
+
+                    double V = 1 / Z;
+
+                    if (k != 0)
+                    {
+                        V =V-k;
+                    }
+
+                    
+                    txtV.Text = $"V = {V.ToString("F2")}";
+
+                    txtblk_protocol3.Text = $"Протокол обичслень створено за посиланням: {fullPath}";
+                }
+
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Помилка обчислення");
+            }
+        }
+
+
 
         private double[,] PrepareForMax(double[,] matrix)
         {
@@ -358,7 +491,45 @@ namespace Lab1_JordanExceptions
             }
         }
 
+        public double[,] PrepareExtendedMatrix(double[,] shiftedMatrix)
+        {
+            int rows = shiftedMatrix.GetLength(0);
+            int cols = shiftedMatrix.GetLength(1);
 
+            double[,] extendedMatrix = new double[rows + 1, cols + 1];
+
+            for (int i = 0; i < rows + 1; i++)
+            {
+                for (int j = 0; j < cols + 1; j++)
+                {
+                    if (i < rows && j < cols)
+                    {
+                        extendedMatrix[i, j] = shiftedMatrix[i, j];
+                    }
+                    else if (i < rows && j == cols)
+                    {
+                        extendedMatrix[i, j] = 1;
+                    }
+                    else if (i == rows && j < cols)
+                    {
+                        extendedMatrix[i, j] = -1;
+                    }
+                    else
+                    {
+                        extendedMatrix[i, j] = 0;
+                    }
+                }
+            }
+
+            return extendedMatrix;
+        }
+
+
+        private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^0-9]+");
+            e.Handled = regex.IsMatch(e.Text);
+        }
 
     }
 }
