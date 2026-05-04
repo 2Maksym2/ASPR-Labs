@@ -21,6 +21,7 @@
         void InvertMatrixSave(double[,] b);
         void RankSave(int r, double[,] x, double[,] a);
         void RankResultSave(int r, double[,] x);
+        void SaveMixedStrategy(double[] strategy);
 
     }
 }
