@@ -287,6 +287,15 @@ namespace Lab1_JordanExceptions
                 txtPlayer2Result.Text = string.Join("; ", res.Q.Select(u => u.ToString("F2")));
                 txtV.Text = $"V = {res.V:F2}";
 
+                _protocol.SaveSectionHeader("Змішані стратегії першого гравця");
+                _protocol.SaveMixedStrategy(res.P);
+
+                _protocol.SaveSectionHeader("Змішані стратегії другого гравця");
+                _protocol.SaveMixedStrategy(res.Q);
+
+                _protocol.SaveSectionHeader($"Ціна гри:  {res.V:F1}" );
+
+
                 txtblk_protocol3.Text = $"Протокол обчислень створено за посиланням: {fullPath}";
             }
             catch (Exception ex)
@@ -319,6 +328,8 @@ namespace Lab1_JordanExceptions
                 txtPlayer1Result.Text = string.Join("; ", res.P.Select(x => x.ToString("F2")));
                 txtPlayer2Result.Text = string.Join("; ", res.Q.Select(u => u.ToString("F2")));
                 txtV.Text = $"V = {res.V:F2}";
+                _protocol.FileCleaner();
+
             }
             catch (Exception ex)
             {
@@ -486,24 +497,47 @@ namespace Lab1_JordanExceptions
 
                 for (int i = 0; i < rows; i++) resX[i] = (i == bestRow) ? 1.0 : 0.0;
                 for (int j = 0; j < cols; j++) resU[j] = (j == bestCol) ? 1.0 : 0.0;
+
+
+                _protocol.SaveSectionHeader("Cтратегії першого гравця");
+                _protocol.SaveMixedStrategy(resX);
+
+
+                _protocol.SaveSectionHeader("Cтратегії другого гравця");
+                _protocol.SaveMixedStrategy(resU);
+
+
+                _protocol.SaveSectionHeader($"Ціна гри:  {vFinal:F1}");
             }
             else
             {
                 if ((cols == 2 && rows > cols) || (cols > rows && rows == 2))
+                {
                     workingMatrix = _analyzer.SimplifyMatrix(workingMatrix);
 
-                double minVal = workingMatrix.Cast<double>().Min();
+                }
+
+                    double minVal = workingMatrix.Cast<double>().Min();
                 double k = minVal < 0 ? Math.Abs(minVal) + 1 : 0;
 
                 if (k > 0)
                 {
                     for (int i = 0; i < workingMatrix.GetLength(0); i++)
+                    {
                         for (int j = 0; j < workingMatrix.GetLength(1); j++)
+                        {
                             workingMatrix[i, j] += k;
+                        }
+                    }
+
                 }
 
                 double[,] extended = PrepareExtendedMatrix(workingMatrix);
+               
+
                 double[] rawX = _solver.FindOptimalSolution(extended);
+                _protocol.FileCleaner();
+
                 double[] rawU = _dualsolver.FindOptimalSolution(extended);
                 double Z = rawX[rawX.Length - 1];
 

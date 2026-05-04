@@ -286,5 +286,18 @@ namespace JordanExceptions
                 File.AppendAllText(_path, $"\n{new string('=', 20)}\n{message}\n{new string('=', 20)}\n");
             }
         }
+
+
+        public void SaveMixedStrategy(double[] strategy)
+        {
+                lock (_path)
+                {
+                    StringBuilder sb = new StringBuilder();
+                    sb.AppendLine(string.Join("; ", strategy.Select(x => x.ToString("F2"))));
+
+                   File.AppendAllText(_path, sb.ToString());
+                }
+
+        }
     }
 }
