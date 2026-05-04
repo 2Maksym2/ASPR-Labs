@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Lab1_JordanExceptions"
         mc:Ignorable="d"
-        Title="Lab2" Height="753" Width="800">
+        Title="Lab3" Height="753" Width="800">
     <Grid Background="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
@@ -49,10 +49,10 @@
 
                                     <StackPanel Orientation="Horizontal" Margin="0,5">
                                         <TextBlock Text="Кількість партій: " Width="100" VerticalAlignment="Center"/>
-                                        <TextBox x:Name="IterCountBox" PreviewTextInput="NumberValidationTextBox" Text="50"/>
+                                        <TextBox x:Name="txtIterations" PreviewTextInput="NumberValidationTextBox" Text="50"/>
                                     </StackPanel>
                                  
-                                    <Button Content="Змоделювати гру" Height="50" FontWeight="Bold"  Width="226"/>
+                                    <Button Content="Змоделювати гру" Height="50" FontWeight="Bold"  Width="226" Click="SimulationButton_Click"/>
 
                                 </StackPanel>
                             </StackPanel>

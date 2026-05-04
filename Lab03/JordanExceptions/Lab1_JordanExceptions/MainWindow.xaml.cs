@@ -276,129 +276,56 @@ namespace Lab1_JordanExceptions
         {
             try
             {
-                _analyzer.InactiveRows.Clear();
-                _analyzer.InactiveCols.Clear();
-
-                _protocol.FileCleaner();
-
-                var matrixA = ParseMatrix(txtMatrix.Text);
-
-                _solver.Reset();
-                _dualsolver.Reset();
-                _protocol.FileCleaner();
-
-                int columns = matrixA.GetLength(1);
-                int rows = matrixA.GetLength(0); 
-
-                double[] resultX = new double[rows];
-                double[] resultU = new double[columns];
-
-                double[] result = _analyzer.PureStrategy(matrixA);
-
-                if (result != null)
+                if (string.IsNullOrWhiteSpace(txtMatrix.Text))
                 {
-                    int bestRow = (int)result[0];
-                    int bestCol = (int)result[1];
-
-                    for (int i = 0; i < resultX.Length; i++)
-                    {
-                        resultX[i] = (i == bestRow) ? 1.0 : 0.0;
-                    }
-
-                    for (int i = 0; i < resultU.Length; i++)
-                    {
-                        resultU[i] = (i == bestCol) ? 1.0 : 0.0;
-                    }
-
-                    txtPlayer1Result.Text = $"{string.Join("; ", resultX.Select(u => u.ToString("F2")))}";
-                    txtPlayer2Result.Text = $"{string.Join("; ", resultU.Select(x => x.ToString("F2")))}";
-                    txtV.Text = $"V = {result[2].ToString("F2")}";
-
-                    txtblk_protocol3.Text = $"Протокол обичслень створено за посиланням: {fullPath}";
-
+                    MessageBox.Show("Будь ласка, введіть матрицю гри.");
+                    return;
                 }
-                else
-                {if ((columns == 2 && rows > columns) || (columns > rows && rows == 2))
-                    {
-                        matrixA = _analyzer.SimplifyMatrix(matrixA);
-                    }
-                    
+                CalculationResult res = GameFullCalculation();
 
-                    double minVal = matrixA.Cast<double>().Min();
-                    double k = 0;
-                    if (minVal < 0)
-                    {
-                        k = -minVal;
+                txtPlayer1Result.Text = string.Join("; ", res.P.Select(x => x.ToString("F2")));
+                txtPlayer2Result.Text = string.Join("; ", res.Q.Select(u => u.ToString("F2")));
+                txtV.Text = $"V = {res.V:F2}";
 
-                        for (int i = 0; i < rows; i++)
-                        {
-                            for (int j = 0; j < columns; j++)
-                            {
-                                matrixA[i, j] += k;
-                            }
-                        }
-                    }
-
-                    matrixA = PrepareExtendedMatrix(matrixA);
-
-                    double[] rawX = _solver.FindOptimalSolution(matrixA);
-                   
-
-                    _protocol.FileCleaner();
-
-
-                    double[] rawU = _dualsolver.FindOptimalSolution(matrixA);
-
-
-                    double Z = rawX[rawX.Length - 1];
-
-                    resultX = new double[rows];
-                    resultU = new double[columns];
-
-                    int rowIdx = 0;
-                    for (int i = 0; i < columns; i++)
-                    {
-                        if (!_analyzer.InactiveCols.Contains(i))
-                        {
-                            resultU[i] = rawX[rowIdx] / Z;
-                            rowIdx++;
-                        }
-                        else resultU[i] = 0;
-                    }
-
-                    int colIdx = 0;
-                    for (int j = 0; j < rows; j++)
-                    {
-                        if (!_analyzer.InactiveRows.Contains(j))
-                        {
-                            resultX[j] = rawU[colIdx] / Z;
-                            colIdx++;
-                        }
-                        else resultX[j] = 0;
-                    }
-
-                    txtPlayer1Result.Text = $"{string.Join("; ", resultX.Select(u => u.ToString("F2")))}";
-                    txtPlayer2Result.Text = $"{string.Join("; ", resultU.Select(x => x.ToString("F2")))}";
-
-                    double V = 1 / Z;
-
-                    if (k != 0)
-                    {
-                        V =V-k;
-                    }
-
-                    
-                    txtV.Text = $"V = {V.ToString("F2")}";
-
-                    txtblk_protocol3.Text = $"Протокол обичслень створено за посиланням: {fullPath}";
-                }
-
+                txtblk_protocol3.Text = $"Протокол обчислень створено за посиланням: {fullPath}";
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                MessageBox.Show("Помилка обчислення");
+                MessageBox.Show("Помилка при розрахунку: " + ex.Message);
             }
         }
+
+
+        private void SimulationButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(txtIterations.Text) || string.IsNullOrWhiteSpace(txtMatrix.Text))
+                {
+                    MessageBox.Show("Заповніть матрицю та кількість партій!");
+                    return;
+                }
+
+                int n = int.Parse(txtIterations.Text);
+
+                CalculationResult res = GameFullCalculation();
+                GameSimulation simWin = new GameSimulation(res.OriginalMatrix, res.P, res.Q, n);
+
+                simWin.Owner = this;
+                simWin.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                simWin.Show();
+
+
+                txtPlayer1Result.Text = string.Join("; ", res.P.Select(x => x.ToString("F2")));
+                txtPlayer2Result.Text = string.Join("; ", res.Q.Select(u => u.ToString("F2")));
+                txtV.Text = $"V = {res.V:F2}";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Помилка: " + ex.Message);
+            }
+        }
+
 
 
 
@@ -529,6 +456,75 @@ namespace Lab1_JordanExceptions
         {
             Regex regex = new Regex("[^0-9]+");
             e.Handled = regex.IsMatch(e.Text);
+        }
+
+        private CalculationResult GameFullCalculation()
+        {
+            _analyzer.InactiveRows.Clear();
+            _analyzer.InactiveCols.Clear();
+
+            _solver.Reset();
+            _dualsolver.Reset();
+
+            var originalMatrix = ParseMatrix(txtMatrix.Text);
+            var workingMatrix = (double[,])originalMatrix.Clone();
+
+            int rows = workingMatrix.GetLength(0);
+            int cols = workingMatrix.GetLength(1);
+
+            double[] resX = new double[rows];
+            double[] resU = new double[cols];
+            double vFinal = 0;
+
+            double[] pureRes = _analyzer.PureStrategy(workingMatrix);
+
+            if (pureRes != null)
+            {
+                int bestRow = (int)pureRes[0];
+                int bestCol = (int)pureRes[1];
+                vFinal = pureRes[2];
+
+                for (int i = 0; i < rows; i++) resX[i] = (i == bestRow) ? 1.0 : 0.0;
+                for (int j = 0; j < cols; j++) resU[j] = (j == bestCol) ? 1.0 : 0.0;
+            }
+            else
+            {
+                if ((cols == 2 && rows > cols) || (cols > rows && rows == 2))
+                    workingMatrix = _analyzer.SimplifyMatrix(workingMatrix);
+
+                double minVal = workingMatrix.Cast<double>().Min();
+                double k = minVal < 0 ? Math.Abs(minVal) + 1 : 0;
+
+                if (k > 0)
+                {
+                    for (int i = 0; i < workingMatrix.GetLength(0); i++)
+                        for (int j = 0; j < workingMatrix.GetLength(1); j++)
+                            workingMatrix[i, j] += k;
+                }
+
+                double[,] extended = PrepareExtendedMatrix(workingMatrix);
+                double[] rawX = _solver.FindOptimalSolution(extended);
+                double[] rawU = _dualsolver.FindOptimalSolution(extended);
+                double Z = rawX[rawX.Length - 1];
+
+                vFinal = (1 / Z) - k;
+
+                int rIdx = 0;
+                for (int i = 0; i < rows; i++)
+                {
+                    if (!_analyzer.InactiveRows.Contains(i)) resX[i] = rawU[rIdx++] / Z;
+                    else resX[i] = 0;
+                }
+
+                int cIdx = 0;
+                for (int j = 0; j < cols; j++)
+                {
+                    if (!_analyzer.InactiveCols.Contains(j)) resU[j] = rawX[cIdx++] / Z;
+                    else resU[j] = 0;
+                }
+            }
+
+            return new CalculationResult { OriginalMatrix = originalMatrix, P = resX, Q = resU, V = vFinal };
         }
 
     }
