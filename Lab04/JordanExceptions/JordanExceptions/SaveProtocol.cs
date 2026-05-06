@@ -43,6 +43,25 @@ namespace JordanExceptions
 
         }
 
+        public void SaveMatrix(double[,] b)
+        {
+            lock (_path)
+            {
+
+                string res = "";
+                for (int i = 0; i < b.GetLength(0); i++)
+                {
+                    res += "\n";
+                    for (int j = 0; j < b.GetLength(1); j++)
+                    {
+                        res += $" {b[i, j]:F2}";
+                    }
+                }
+                res += "\n";
+                File.AppendAllText(_path, res);
+            }
+
+        }
 
 
         public void ResultSave(int stepNumber, double[,] x, double[,] a)
@@ -298,6 +317,19 @@ namespace JordanExceptions
                    File.AppendAllText(_path, sb.ToString());
                 }
 
+        }
+
+
+        public void SaveOptimalStrategies(List<int> strategy)
+        {
+            lock (_path)
+            {
+                string resultString;
+                var activeStrategies = strategy.Select((value, index) => new { value, index })
+                                               .Select(x => "A" + (x.index + 1));
+                resultString = "\nОптимальні стратегії: " + string.Join(" або ", activeStrategies);               
+                File.AppendAllText(_path, resultString + Environment.NewLine);
+            }
         }
     }
 }

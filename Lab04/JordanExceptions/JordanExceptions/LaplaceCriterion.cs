@@ -8,9 +8,12 @@ namespace JordanExceptions
 {
     public class LaplaceCriterion
     {
-        public LaplaceCriterion()
-        {
+        protected readonly ISaveProtocol _protocol;
 
+        public int RowsEqualityCount { get; set; }
+        public LaplaceCriterion(ISaveProtocol protocol)
+        {
+            _protocol = protocol;
         }
 
 
@@ -20,6 +23,7 @@ namespace JordanExceptions
             int cols = matrix.GetLength(1);
             List<int> resultRow;
             double[] resInRow = new double[rows];
+            _protocol.SaveSectionHeader("Критерій Лапласа");
 
             for (int i = 0; i < rows; i++)
             {
@@ -29,10 +33,12 @@ namespace JordanExceptions
                     sum += matrix[i, j];
                 }
                 resInRow[i] = sum / (double)cols;
+                _protocol.StepSave($"\nS{i+1} = {resInRow[i]:F2}");
             }
 
 
             double a = resInRow.Max();
+            _protocol.StepSave($"\nМаксимальний елемент = {a}");
 
             return resultRow = resInRow.Select((value, index) => new { value, index })
                                         .Where(x => x.value == a)

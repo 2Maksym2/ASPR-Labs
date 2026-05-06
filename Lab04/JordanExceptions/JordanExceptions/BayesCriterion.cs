@@ -9,9 +9,12 @@ namespace JordanExceptions
     public class BayesCriterion
     {
 
-        public BayesCriterion()
-        {
+        protected readonly ISaveProtocol _protocol;
 
+        public int RowsEqualityCount { get; set; }
+        public BayesCriterion(ISaveProtocol protocol)
+        {
+            _protocol = protocol;
         }
 
 
@@ -22,6 +25,10 @@ namespace JordanExceptions
             List<int> resultRow;
             double[] resInRow = new double[rows];
 
+            _protocol.SaveSectionHeader("Критерій Байєса");
+            _protocol.StepSave("\nЙмовірності застосування природою стратегій:   ");
+            _protocol.SaveMixedStrategy(strategy);
+
             for (int i = 0; i < rows; i++)
             {
                 double sum = 0;
@@ -31,10 +38,14 @@ namespace JordanExceptions
                     sum += matrix[i, j] * strategy[j];
                 }              
                 resInRow[i] = sum;
+                _protocol.StepSave($"\nS{i+1} = {sum:F2}");
             }
 
 
+
             double a = resInRow.Max();
+            _protocol.StepSave($"\nМаксимальний елемент = {a}");
+
 
             return resultRow = resInRow.Select((value, index) => new { value, index })
                                         .Where(x => x.value == a)
