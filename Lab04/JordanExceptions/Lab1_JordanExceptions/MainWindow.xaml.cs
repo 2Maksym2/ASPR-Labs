@@ -24,7 +24,12 @@ namespace Lab1_JordanExceptions
         private readonly ISaveProtocol _protocol;
         private readonly GomorySimplex _intsolver;
         private readonly MatrixAnalyzer _analyzer;
-
+        private readonly BayesCriterion _bayes;
+        private readonly HurwiczCriterion _hurwicz;
+        private readonly LaplaceCriterion _laplace;
+        private readonly MaximaxCriterion _maximax;
+        private readonly SavageCriterion _savage;
+        private readonly WaldCriterion _wald;
         private string fullPath { get; set; }
 
         public MainWindow()
@@ -41,8 +46,14 @@ namespace Lab1_JordanExceptions
             _dualsolver = new DualSimplexSolver(_protocol, jordan);
             _analyzer = new MatrixAnalyzer();
 
-            fullPath = System.IO.Path.GetFullPath("Protocol.txt");
+            _bayes = new BayesCriterion();
+            _hurwicz = new HurwiczCriterion();
+            _laplace = new LaplaceCriterion();
+            _savage = new SavageCriterion();
+            _maximax = new MaximaxCriterion();
+            _wald = new WaldCriterion();
 
+            fullPath = System.IO.Path.GetFullPath("Protocol.txt");
         }
 
 
@@ -337,6 +348,77 @@ namespace Lab1_JordanExceptions
             }
         }
 
+
+        private void Calculate_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(MatrixInput.Text))
+                {
+                    MessageBox.Show("Будь ласка, введіть матрицю гри.");
+                    return;
+                }
+
+                var originalMatrix = ParseMatrix(MatrixInput.Text);
+                var strategy = ParseVector(txtStrategy.Text);
+
+                if (!double.TryParse(txtY.Text,
+                            System.Globalization.NumberStyles.Any,
+                            System.Globalization.CultureInfo.InvariantCulture,
+                            out double y))
+                {
+                    MessageBox.Show("Некоректний коефіцієнт Y. Використовуйте число, наприклад 0.3");
+                    return;
+                }
+
+                List<int> wald = _wald.Solver(originalMatrix);
+                List<int> maximax = _maximax.Solver(originalMatrix);
+                List<int> hurwicz = _hurwicz.Solver(originalMatrix, y);
+                List<int> bayes = _bayes.Solver(originalMatrix, strategy);
+                List<int> laplace = _laplace.Solver(originalMatrix);
+                List<int> savage = _savage.Solver(originalMatrix);
+                
+                WaldResult.Text = FormatStrategyNames(wald);
+                MaximaxResult.Text = FormatStrategyNames(maximax);
+                HurwiczResult.Text = FormatStrategyNames(hurwicz);
+                BayesResult.Text = FormatStrategyNames(bayes);
+                SavageResult.Text = FormatStrategyNames(savage);
+                LaplaceResult.Text = FormatStrategyNames(laplace);
+
+                var allIndices = wald.Concat(maximax).Concat(hurwicz)
+                                     .Concat(bayes).Concat(savage).Concat(laplace).ToList();
+
+                if (allIndices.Count > 0)
+                {
+                    var frequencies = allIndices
+                        .GroupBy(index => index)
+                        .Select(g => new { Index = g.Key, Count = g.Count() })
+                        .ToList();
+
+                    int maxFreq = frequencies.Max(f => f.Count);
+
+                    var bestIndices = frequencies
+                        .Where(f => f.Count == maxFreq)
+                        .Select(f => f.Index)
+                        .OrderBy(i => i)
+                        .ToList();
+
+                    MostFrequentResult.Text = FormatStrategyNames(bestIndices);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Помилка при обчисленні: {ex.Message}");
+            }
+        }
+
+        private string FormatStrategyNames(List<int> indices)
+        {
+            if (indices == null || indices.Count == 0) return "Немає розв'язків";
+
+            var names = indices.Select(i => $"A{i + 1}");
+            return string.Join(" або ", names);
+        }
 
 
 
