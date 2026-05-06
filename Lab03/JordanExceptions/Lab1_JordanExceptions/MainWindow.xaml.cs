@@ -39,7 +39,7 @@ namespace Lab1_JordanExceptions
             _solver = new SimplexSolver(_protocol, jordan);
             _intsolver = new GomorySimplex(_protocol, jordan);
             _dualsolver = new DualSimplexSolver(_protocol, jordan);
-            _analyzer = new MatrixAnalyzer();
+            _analyzer = new MatrixAnalyzer(_protocol);
 
             fullPath = System.IO.Path.GetFullPath("Protocol.txt");
 
@@ -476,6 +476,7 @@ namespace Lab1_JordanExceptions
 
             _solver.Reset();
             _dualsolver.Reset();
+            _protocol.FileCleaner();
 
             var originalMatrix = ParseMatrix(txtMatrix.Text);
             var workingMatrix = (double[,])originalMatrix.Clone();

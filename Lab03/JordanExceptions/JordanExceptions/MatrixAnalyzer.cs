@@ -8,17 +8,22 @@ namespace JordanExceptions
 {
     public class MatrixAnalyzer
     {
+        protected readonly ISaveProtocol _protocol;
         public List<int> InactiveRows { get; private set; } = new List<int>();
         public List<int> InactiveCols { get; private set; } = new List<int>();
 
-        public MatrixAnalyzer() { }
-
+        public MatrixAnalyzer(ISaveProtocol protocol)
+        {
+            _protocol = protocol;
+        }
         public double[] PureStrategy(double[,] matrixA)
         {
             int columns = matrixA.GetLength(1);
             int rows = matrixA.GetLength(0);
             double resultRow;
             double resultColumn;
+
+            _protocol.InputMatrix(matrixA);
 
             double[] result = new double[3];
             double[] minInRows = new double[rows];
@@ -44,11 +49,17 @@ namespace JordanExceptions
                 }
                 maxInColumns[j] = max;
             }
-       
+
+
+
             double a = minInRows.Max();
+            _protocol.SaveSectionHeader($"Нижня ціна гри: {a}");
+
             resultRow = Array.IndexOf(minInRows, a);
 
             double b = maxInColumns.Min();
+            _protocol.SaveSectionHeader($"Верхня ціна гри: {b}");
+
             resultColumn = Array.IndexOf(maxInColumns, b);
 
             if (a == b)
@@ -56,6 +67,7 @@ namespace JordanExceptions
                 result[0] = resultRow;
                 result[1] = resultColumn;
                 result[2] = a;
+
 
                 return result;
             }
