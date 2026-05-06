@@ -355,6 +355,7 @@ namespace Lab1_JordanExceptions
             {
                 _protocol.FileCleaner();
 
+                
                 if (string.IsNullOrWhiteSpace(MatrixInput.Text))
                 {
                     MessageBox.Show("Будь ласка, введіть матрицю гри.");
@@ -372,6 +373,8 @@ namespace Lab1_JordanExceptions
                     MessageBox.Show("Некоректний коефіцієнт Y. Використовуйте число, наприклад 0.3");
                     return;
                 }
+
+                _protocol.InputMatrix(originalMatrix);
 
                 List<int> wald = _wald.Solver(originalMatrix);
                 _protocol.SaveOptimalStrategies(wald);

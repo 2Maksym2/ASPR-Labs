@@ -325,9 +325,7 @@ namespace JordanExceptions
             lock (_path)
             {
                 string resultString;
-                var activeStrategies = strategy.Select((value, index) => new { value, index })
-                                               .Select(x => "A" + (x.index + 1));
-                resultString = "\nОптимальні стратегії: " + string.Join(" або ", activeStrategies);               
+                var activeStrategies = strategy.Select(index => "A" + (index + 1)); resultString = "\nОптимальні стратегії: " + string.Join(" або ", activeStrategies);               
                 File.AppendAllText(_path, resultString + Environment.NewLine);
             }
         }
