@@ -9,9 +9,12 @@ namespace JordanExceptions
     public class SavageCriterion
     {
 
-        public SavageCriterion()
-        {
+        protected readonly ISaveProtocol _protocol;
 
+        public int RowsEqualityCount { get; set; }
+        public SavageCriterion(ISaveProtocol protocol)
+        {
+            _protocol = protocol;
         }
 
 
@@ -23,7 +26,9 @@ namespace JordanExceptions
             List<int> resultRow;
             double[] maxInRows = new double[rows];
             double[] maxInCols = new double[cols];
+            double[,] newMatrix = matrix;
 
+            _protocol.SaveSectionHeader("Критерія Севіджа");
             for (int j = 0; j < cols; j++)
             {
                 max = matrix[0, j];
@@ -38,22 +43,27 @@ namespace JordanExceptions
             {
                 for (int i = 0; i < rows; i++)
                 {
-                    matrix[i,j] = maxInCols[j] - matrix[i, j];
+                    newMatrix[i,j] = maxInCols[j] - matrix[i, j];
                 }
             }
+            _protocol.StepSave("\nМатриця ризиків:");
 
+            _protocol.SaveMatrix(newMatrix);
 
             for (int i = 0; i < rows; i++)
             {
-                max = matrix[i, 0];
+                max = newMatrix[i, 0];
                 for (int j = 1; j < cols; j++)
                 {
-                    if (matrix[i, j] > max) max = matrix[i, j];
+                    if (newMatrix[i, j] > max) max = newMatrix[i, j];
                 }
                 maxInRows[i] = max;
+                _protocol.StepSave($"\nМаксимум в рядку {i+1} = {max}");
+
             }
 
             double a = maxInRows.Min();
+            _protocol.StepSave($"\nМінімальний елемент = {a}");
 
             return resultRow = maxInRows.Select((value, index) => new { value, index })
                                         .Where(x => x.value == a)

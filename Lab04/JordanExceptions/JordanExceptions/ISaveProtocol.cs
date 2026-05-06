@@ -8,6 +8,7 @@
 
         void InputTableSave(double[,] matrix, string[] rows, string[] columns);
         void InputMatrix(double[,] b);
+        public void SaveMatrix(double[,] b);
 
         void SaveSectionHeader(string message);
         void SaveStepHeader(string rowName, string colName, string title = "");
@@ -22,6 +23,7 @@
         void RankSave(int r, double[,] x, double[,] a);
         void RankResultSave(int r, double[,] x);
         void SaveMixedStrategy(double[] strategy);
+        public void SaveOptimalStrategies(List<int> strategy);
 
     }
 }

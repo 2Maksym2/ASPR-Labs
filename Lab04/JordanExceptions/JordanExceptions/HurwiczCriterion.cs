@@ -8,9 +8,12 @@ namespace JordanExceptions
 {
     public class HurwiczCriterion
     {
-        public HurwiczCriterion()
-        {
+        protected readonly ISaveProtocol _protocol;
 
+        public int RowsEqualityCount { get; set; }
+        public HurwiczCriterion(ISaveProtocol protocol)
+        {
+            _protocol = protocol;
         }
 
 
@@ -25,6 +28,9 @@ namespace JordanExceptions
             double[] minInRows = new double[rows];
             double[] resInRows = new double[rows];
 
+            _protocol.SaveSectionHeader("Критерій Гурвіца: ");
+            _protocol.StepSave($"\nКоефіцієнт y: {coef}");
+
             for (int i = 0; i < rows; i++)
             {
                 min = matrix[i, 0];
@@ -33,6 +39,8 @@ namespace JordanExceptions
                     if (matrix[i, j] < min) min = matrix[i, j];
                 }
                 minInRows[i] = min;
+                _protocol.StepSave($"\nМінімум в рядку {i+1} = {min}");
+
             }
 
 
@@ -44,15 +52,21 @@ namespace JordanExceptions
                     if (matrix[i, j] > max) max = matrix[i, j];
                 }
                 maxInRows[i] = max;
+                _protocol.StepSave($"\nМаксимум в рядку {i+1} = {max}");
+
             }
 
             for (int i = 0; i < rows; i++)
             {
                resInRows[i] = minInRows[i]*coef + (1-coef)*maxInRows[i];
+                _protocol.StepSave($"\nS{i + 1} = {resInRows[i]:F2}");
+
             }
 
 
             double a = resInRows.Max();
+            _protocol.StepSave($"\nМаксимум серед значень = {a}");
+
             return resultRow = resInRows.Select((value, index) => new { value, index })
                                         .Where(x => x.value == a)
                                         .Select(x => x.index)

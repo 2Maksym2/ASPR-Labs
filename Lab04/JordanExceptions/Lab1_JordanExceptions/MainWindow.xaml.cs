@@ -46,12 +46,12 @@ namespace Lab1_JordanExceptions
             _dualsolver = new DualSimplexSolver(_protocol, jordan);
             _analyzer = new MatrixAnalyzer();
 
-            _bayes = new BayesCriterion();
-            _hurwicz = new HurwiczCriterion();
-            _laplace = new LaplaceCriterion();
-            _savage = new SavageCriterion();
-            _maximax = new MaximaxCriterion();
-            _wald = new WaldCriterion();
+            _bayes = new BayesCriterion(_protocol);
+            _hurwicz = new HurwiczCriterion(_protocol);
+            _laplace = new LaplaceCriterion(_protocol);
+            _savage = new SavageCriterion(_protocol);
+            _maximax = new MaximaxCriterion(_protocol);
+            _wald = new WaldCriterion(_protocol);
 
             fullPath = System.IO.Path.GetFullPath("Protocol.txt");
         }
@@ -353,6 +353,8 @@ namespace Lab1_JordanExceptions
         {
             try
             {
+                _protocol.FileCleaner();
+
                 if (string.IsNullOrWhiteSpace(MatrixInput.Text))
                 {
                     MessageBox.Show("Будь ласка, введіть матрицю гри.");
@@ -372,12 +374,23 @@ namespace Lab1_JordanExceptions
                 }
 
                 List<int> wald = _wald.Solver(originalMatrix);
+                _protocol.SaveOptimalStrategies(wald);
+
                 List<int> maximax = _maximax.Solver(originalMatrix);
+                _protocol.SaveOptimalStrategies(maximax);
+
                 List<int> hurwicz = _hurwicz.Solver(originalMatrix, y);
+                _protocol.SaveOptimalStrategies(hurwicz);
+
                 List<int> bayes = _bayes.Solver(originalMatrix, strategy);
+                _protocol.SaveOptimalStrategies(bayes);
+
                 List<int> laplace = _laplace.Solver(originalMatrix);
+                _protocol.SaveOptimalStrategies(laplace);
+
                 List<int> savage = _savage.Solver(originalMatrix);
-                
+                _protocol.SaveOptimalStrategies(savage);
+
                 WaldResult.Text = FormatStrategyNames(wald);
                 MaximaxResult.Text = FormatStrategyNames(maximax);
                 HurwiczResult.Text = FormatStrategyNames(hurwicz);
@@ -405,6 +418,9 @@ namespace Lab1_JordanExceptions
 
                     MostFrequentResult.Text = FormatStrategyNames(bestIndices);
                 }
+
+                txtblk_protocol4.Text = $"Протокол обчислень створено за посиланням: {fullPath}";
+
             }
             catch (Exception ex)
             {
