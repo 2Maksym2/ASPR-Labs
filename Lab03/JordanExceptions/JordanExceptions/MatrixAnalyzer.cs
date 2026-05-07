@@ -106,8 +106,8 @@ namespace JordanExceptions
             int rows = matrix.GetLength(0);
             int cols = matrix.GetLength(1);
 
-            List<int> survivors = new List<int>();
-            for (int i = 0; i < rows; i++) survivors.Add(i);
+            List<int> indxs = new List<int>();
+            for (int i = 0; i < rows; i++) indxs.Add(i);
             List<int> toRemove = new List<int>();
 
             for (int i = 0; i < rows; i++)
@@ -126,9 +126,9 @@ namespace JordanExceptions
                 }
             }
 
-            survivors.RemoveAll(idx => toRemove.Contains(idx));
+            indxs.RemoveAll(idx => toRemove.Contains(idx));
 
-            return RebuildMatrix(matrix, survivors, null);
+            return RebuildMatrix(matrix, indxs, null);
         }
 
 
