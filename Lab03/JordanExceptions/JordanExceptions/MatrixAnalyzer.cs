@@ -105,25 +105,32 @@ namespace JordanExceptions
         {
             int rows = matrix.GetLength(0);
             int cols = matrix.GetLength(1);
-            List<int> activeRows = new List<int>();
-            for (int i = 0; i < rows; i++) activeRows.Add(i);
 
-            for (int i = 0; i < activeRows.Count; i++)
+            List<int> survivors = new List<int>();
+            for (int i = 0; i < rows; i++) survivors.Add(i);
+            List<int> toRemove = new List<int>();
+
+            for (int i = 0; i < rows; i++)
             {
-                for (int j = 0; j < activeRows.Count; j++)
-                {
-                    if (i == j) continue;
+                if (toRemove.Contains(i)) continue;
 
-                    if (IsRowADominatingB(matrix, activeRows[i], activeRows[j], cols))
+                for (int j = 0; j < rows; j++)
+                {
+                    if (i == j || toRemove.Contains(j)) continue;
+
+                    if (IsRowADominatingB(matrix, i, j, cols))
                     {
-                        InactiveRows.Add(activeRows[j]);
-                        activeRows.RemoveAt(j);
-                        j--;
+                        toRemove.Add(j);
+                        InactiveRows.Add(j);
                     }
                 }
             }
-            return RebuildMatrix(matrix, activeRows, null, cols);
+
+            survivors.RemoveAll(idx => toRemove.Contains(idx));
+
+            return RebuildMatrix(matrix, survivors, null);
         }
+
 
         private double[,] RemoveDominatedColumns(double[,] matrix)
         {
@@ -146,7 +153,7 @@ namespace JordanExceptions
                     }
                 }
             }
-            return RebuildMatrix(matrix, null, activeCols, rows);
+            return RebuildMatrix(matrix, null, activeCols);
         }
 
         private bool IsRowADominatingB(double[,] matrix, int rowA, int rowB, int cols)
@@ -163,7 +170,7 @@ namespace JordanExceptions
             return true;
         }
 
-        private double[,] RebuildMatrix(double[,] oldMatrix, List<int> rows, List<int> cols, int otherDim)
+        private double[,] RebuildMatrix(double[,] oldMatrix, List<int> rows, List<int> cols)
         {
             int newRows = rows?.Count ?? oldMatrix.GetLength(0);
             int newCols = cols?.Count ?? oldMatrix.GetLength(1);
