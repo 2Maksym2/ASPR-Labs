@@ -1,0 +1,40 @@
+﻿<Window x:Class="Lab1_JordanExceptions.GameSimulation"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Lab1_JordanExceptions"
+        mc:Ignorable="d"
+        Title="GameSimulation" Height="450" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <DataGrid x:Name="dgSimulation" AutoGenerateColumns="False" IsReadOnly="True" VerticalScrollBarVisibility="Auto">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="№" Binding="{Binding Id}" Width="40"/>
+                <DataGridTextColumn Header="Вип. число А" Binding="{Binding RandA, StringFormat={}{0:F3}}" Width="*"/>
+                <DataGridTextColumn Header="Стр. А" Binding="{Binding StrategyA}" Width="*"/>
+                <DataGridTextColumn Header="Вип. число В" Binding="{Binding RandB, StringFormat={}{0:F3}}" Width="*"/>
+                <DataGridTextColumn Header="Стр. В" Binding="{Binding StrategyB}" Width="*"/>
+                <DataGridTextColumn Header="Виграш А" Binding="{Binding WinA}" Width="*"/>
+                <DataGridTextColumn Header="Накоп. виграш" Binding="{Binding TotalWinA}" Width="*"/>
+                <DataGridTextColumn Header="Сер. виграш" Binding="{Binding AvgWinA, StringFormat={}{0:F3}}" Width="*"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,10,0,0">
+            <GroupBox Header="Змішані стратегії 1-го гравця">
+                <TextBox x:Name="txtFinalP" Width="180" IsReadOnly="True"/>
+            </GroupBox>
+            <GroupBox Header="Змішані стратегії 2-го гравця" Margin="10,0">
+                <TextBox x:Name="txtFinalQ" Width="180" IsReadOnly="True"/>
+            </GroupBox>
+            <GroupBox Header="Ціна гри">
+                <TextBox x:Name="txtFinalV" Width="100" IsReadOnly="True"/>
+            </GroupBox>
+        </StackPanel>
+    </Grid>
+</Window>
