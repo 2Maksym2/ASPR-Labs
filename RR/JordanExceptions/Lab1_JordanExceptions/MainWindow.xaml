@@ -5,13 +5,51 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Lab1_JordanExceptions"
         mc:Ignorable="d"
-        Title="Lab4" Height="753" Width="800">
+        Title="RR" Height="753" Width="800">
     <Grid Background="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
             <ColumnDefinition Width="399*"/>
         </Grid.ColumnDefinitions>
         <TabControl Grid.ColumnSpan="2">
+
+            <TabItem Header="Багатокритеріальна оптимізація">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Background="White" Margin="-5,0,5,0">
+                    <StackPanel Margin="16">
+                        <TextBlock Text="Цільові функції (кожна з нового рядка; в кінці max або min):" FontWeight="SemiBold"/>
+                        <TextBox x:Name="txtMultiObjectives" Height="90" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" FontFamily="Consolas" Padding="6" Margin="0,6,0,10"/>
+
+                        <TextBlock FontWeight="SemiBold"><Run Language="uk-ua" Text="Обмеження (рівності)"/><Run Text=":"/></TextBlock>
+                        <TextBox x:Name="txtMultiEqualities" Height="100" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" FontFamily="Consolas" Padding="6" Margin="0,6,0,10"/>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                            <Button Content="Приклад з методички" Padding="12,6" Margin="0,0,10,0" Click="BtnMultiCriteriaExample_Click"/>
+                            <Button Content="Знайти розв'язок" Padding="12,6" FontWeight="Bold" Background="#FFADEDFF" Click="BtnMultiCriteriaSolve_Click"/>
+                        </StackPanel>
+
+                        <TextBlock FontWeight="SemiBold"><Run Text="Коефіцієнти"/><Run Language="uk-ua" Text=" (С)"/><Run Text=":"/></TextBlock>
+                        <TextBox x:Name="txtMultiCoeffs" IsReadOnly="True" Height="60" FontFamily="Consolas" Background="#F8F8F8" Margin="0,4,0,10"/>
+
+                        <TextBlock FontWeight="SemiBold"><Run Text="Оптимальні "/><Run Language="uk-ua" Text="розвязки"/><Run Text=":"/></TextBlock>
+                        <TextBox x:Name="txtMultiOptimalVectors" IsReadOnly="True" Height="60" FontFamily="Consolas" Background="#F8F8F8" Margin="0,4,0,10"/>
+
+                        <TextBlock FontWeight="SemiBold"><Run Language="uk-ua" Text="Н"/><Run Text="еоптимальні"/><Run Language="uk-ua" Text=" розвязки"/><Run Text=" :"/></TextBlock>
+                        <TextBox x:Name="txtMultiNonOptimal" IsReadOnly="True" Height="100" FontFamily="Consolas" Background="#F8F8F8" Margin="0,4,0,10"/>
+
+                        <Separator Margin="0,10"/>
+
+                        <TextBlock Text="Вагові коефіцієнти λ (Змішана стратегія):" FontWeight="SemiBold"/>
+                        <TextBox x:Name="txtMultiWeights" IsReadOnly="True" Height="28" FontFamily="Consolas" Background="#F8F8F8" Margin="0,4,0,10"/>
+
+                        <TextBlock Text="Компромісний розв'язок X*:" FontWeight="SemiBold" Foreground="DarkGreen"/>
+                        <TextBox x:Name="txtMultiCompromise" IsReadOnly="True" Height="30" FontWeight="Bold" FontFamily="Consolas" Background="#EFFFF0" Margin="0,4,0,10"/>
+
+                        <TextBlock x:Name="txtblk_protocolMulti" TextWrapping="Wrap" FontSize="14" Foreground="#333"/>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+
 
             <TabItem Header="Ігри з природою" Height="20" VerticalAlignment="Top">
                 <Grid Background="White">
@@ -127,8 +165,8 @@
                 </Grid>
             </TabItem>
 
-
-
+            
+            
             <TabItem Header="Роз'язання двоїстої задачі">
                 <Grid Background="White" Height="715">
                     <Grid.ColumnDefinitions>

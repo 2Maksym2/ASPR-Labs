@@ -1,4 +1,5 @@
 ﻿using JordanExceptions;
+using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -30,6 +31,7 @@ namespace Lab1_JordanExceptions
         private readonly MaximaxCriterion _maximax;
         private readonly SavageCriterion _savage;
         private readonly WaldCriterion _wald;
+        private readonly MultiCriteriaSolver _multiCriteria;
         private string fullPath { get; set; }
 
         public MainWindow()
@@ -45,6 +47,7 @@ namespace Lab1_JordanExceptions
             _intsolver = new GomorySimplex(_protocol, jordan);
             _dualsolver = new DualSimplexSolver(_protocol, jordan);
             _analyzer = new MatrixAnalyzer();
+            _multiCriteria = new MultiCriteriaSolver(_solver, _dualsolver, _analyzer, _protocol);
 
             _bayes = new BayesCriterion(_protocol);
             _hurwicz = new HurwiczCriterion(_protocol);
@@ -578,6 +581,9 @@ namespace Lab1_JordanExceptions
             _solver.Reset();
             _dualsolver.Reset();
 
+            _solver.RowsEqualityCount = 0;
+            _dualsolver.RowsEqualityCount = 0;
+
             var originalMatrix = ParseMatrix(txtMatrix.Text);
             var workingMatrix = (double[,])originalMatrix.Clone();
 
@@ -660,6 +666,61 @@ namespace Lab1_JordanExceptions
             }
 
             return new CalculationResult { OriginalMatrix = originalMatrix, P = resX, Q = resU, V = vFinal };
+        }
+
+        private void BtnMultiCriteriaExample_Click(object sender, RoutedEventArgs e)
+        {
+            txtMultiObjectives.Text =
+                "2x1+2x2+x3+x4+x5max\r\n" +
+                "x1-3x2+5x3-x4-2x5min\r\n" +
+                "x1-4x2+5x3+9x4-2x5max";
+            txtMultiEqualities.Text =
+                "-x1+2x2-x3+2x4+x5=6\r\n" +
+                "x1+4x2+3x3+2x4+x5=9\r\n" +
+                "x1+2x2+2x4-x5=2";
+        }
+
+        private void BtnMultiCriteriaSolve_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                _protocol.FileCleaner();
+                MultiCriteriaResult res = _multiCriteria.Solve(
+                    txtMultiObjectives.Text,
+                    txtMultiEqualities.Text);
+
+                txtMultiCoeffs.Text = FormatMultiMatrix(res.ObjectiveCoefficients);
+                txtMultiOptimalVectors.Text = FormatMultiMatrix(res.OptimalPlans);
+                txtMultiNonOptimal.Text = FormatMultiMatrix(res.RegretMatrix);
+                txtMultiWeights.Text = string.Join("; ", res.Weights.Select(w => w.ToString("F2", CultureInfo.InvariantCulture)));
+                txtMultiCompromise.Text = string.Join("; ", res.CompromisePlan.Select(v => v.ToString("F2", CultureInfo.InvariantCulture)));
+                txtblk_protocolMulti.Text = $"Обчислення завершено. Протокол: {fullPath}";
+            }
+            catch (Exception ex)
+            {
+                txtMultiCoeffs.Clear();
+                txtMultiOptimalVectors.Clear();
+                txtMultiNonOptimal.Clear();
+                txtMultiWeights.Clear();
+                txtMultiCompromise.Clear();
+                txtblk_protocolMulti.Text = string.Empty;
+                MessageBox.Show(ex.Message, "Багатокритеріальна оптимізація", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+
+        private static string FormatMultiMatrix(double[,] m)
+        {
+            var sb = new StringBuilder();
+            for (int i = 0; i < m.GetLength(0); i++)
+            {
+                for (int j = 0; j < m.GetLength(1); j++)
+                {
+                    if (j > 0) sb.Append('\t');
+                    sb.Append(m[i, j].ToString("F2", CultureInfo.InvariantCulture));
+                }
+                sb.AppendLine();
+            }
+            return sb.ToString().TrimEnd();
         }
 
     }
