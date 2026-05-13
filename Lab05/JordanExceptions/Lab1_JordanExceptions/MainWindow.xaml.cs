@@ -1,0 +1,667 @@
+﻿using JordanExceptions;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Media.Media3D;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+
+namespace Lab1_JordanExceptions
+{
+    public partial class MainWindow : Window
+    {
+        private readonly RankSolver _rankSolver;
+        private readonly SimplexSolver _solver;
+        private readonly DualSimplexSolver _dualsolver;
+        private readonly LinearSolver _linearSolver;
+        private readonly IMatrixInvertor _invertor;
+        private readonly ISaveProtocol _protocol;
+        private readonly GomorySimplex _intsolver;
+        private readonly MatrixAnalyzer _analyzer;
+        private readonly BayesCriterion _bayes;
+        private readonly HurwiczCriterion _hurwicz;
+        private readonly LaplaceCriterion _laplace;
+        private readonly MaximaxCriterion _maximax;
+        private readonly SavageCriterion _savage;
+        private readonly WaldCriterion _wald;
+        private string fullPath { get; set; }
+
+        public MainWindow()
+        {
+            InitializeComponent();
+
+            _protocol = new SaveProtocol();
+            var jordan = new JordanMethod();
+            _rankSolver = new RankSolver(_protocol, jordan);
+            _invertor = new MatrixInvertor(jordan, _protocol);
+            _linearSolver = new LinearSolver(_protocol, _invertor);
+            _solver = new SimplexSolver(_protocol, jordan);
+            _intsolver = new GomorySimplex(_protocol, jordan);
+            _dualsolver = new DualSimplexSolver(_protocol, jordan);
+            _analyzer = new MatrixAnalyzer();
+
+            _bayes = new BayesCriterion(_protocol);
+            _hurwicz = new HurwiczCriterion(_protocol);
+            _laplace = new LaplaceCriterion(_protocol);
+            _savage = new SavageCriterion(_protocol);
+            _maximax = new MaximaxCriterion(_protocol);
+            _wald = new WaldCriterion(_protocol);
+
+            fullPath = System.IO.Path.GetFullPath("Protocol.txt");
+        }
+
+
+
+        private void Btn_rank_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                _protocol.FileCleaner();
+
+                var matrixA = ParseMatrix(txtbx_A.Text);
+                int rank = _rankSolver.GetSolution(matrixA, matrixA.GetLength(0), matrixA.GetLength(1));
+                txtbx_rank.Text = rank.ToString();
+
+                txtblk_protocol.Text = $"Протокол обичслень створено за посиланням: {fullPath}";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Помилка при розрахунку рангу: " + ex.Message);
+            }
+        }
+
+
+
+        private void Btn_result_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                _protocol.FileCleaner();
+
+                var matrixA = ParseMatrix(txtbx_A.Text);
+                var vectorB = ParseVector(txtbx_b.Text);
+
+                if (matrixA.GetLength(0) != vectorB.Length)
+                {
+                    throw new Exception("Кількість рядків A має дорівнювати довжині b!");
+                }
+
+                double[] xResult = _linearSolver.GetSolution(matrixA, vectorB);
+
+                txtbx_X.Text = string.Join(Environment.NewLine, xResult.Select(v => v.ToString("F2")));
+
+                txtblk_protocol.Text = $"Протокол обичслень створено за посиланням: {fullPath}";
+
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Помилка обчислення СЛАР");
+            }
+        }
+
+
+
+        private void Btn_invert_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                _protocol.FileCleaner();
+                var matrixA = ParseMatrix(txtbx_A.Text);
+                double[,] inverted = _invertor.InvertMatrix(matrixA);
+
+                txtbx_invert.Text = FormatMatrixToString(inverted);
+
+                txtblk_protocol.Text = $"Протокол обичслень створено за посиланням: {fullPath}";
+
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Матриця вироджена або сталася помилка");
+            }
+        }
+
+
+        private double[,] ParseMatrix(string input)
+        {
+            var lines = input.Trim().Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+            int rows = lines.Length;
+            int cols = lines[0].Trim().Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries).Length;
+
+            double[,] matrix = new double[rows, cols];
+
+            for (int i = 0; i < rows; i++)
+            {
+                var values = lines[i].Trim().Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+                for (int j = 0; j < cols; j++)
+                {
+                    matrix[i, j] = double.Parse(values[j].Replace('.', ','));
+                }
+            }
+            return matrix;
+        }
+
+        private double[] ParseVector(string input)
+        {
+            return input.Trim()
+                .Split(new[] { '\n', '\r', ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(v => double.Parse(v.Replace('.', ',')))
+                .ToArray();
+        }
+
+        private string FormatMatrixToString(double[,] matrix)
+        {
+            string result = "";
+            for (int i = 0; i < matrix.GetLength(0); i++)
+            {
+                for (int j = 0; j < matrix.GetLength(1); j++)
+                {
+                    result += $"{matrix[i, j],8:F2} ";
+                }
+                result += Environment.NewLine;
+            }
+            return result;
+        }
+
+        private void btn_exit_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
+
+
+
+        private void btnCalculate_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                _protocol.FileCleaner();
+
+                double[,] matrix = ParseToSimplexTable(txtConstraints.Text, txtEquality.Text, txtZFunction.Text);
+              
+                bool isMax = rbMax.IsChecked ?? false; 
+
+                if (isMax) matrix = PrepareForMax(matrix);
+
+                _solver.Reset();
+
+                double[] resultX = _solver.FindOptimalSolution(matrix);
+                double[] resultIntX = _intsolver.Solver(matrix);
+
+                txtResultX.Text = $"({string.Join("; ", resultX.Take(resultX.Length - 1).Select(x => x.ToString("F2")))})";
+                txtIntResultX.Text = $"({string.Join("; ", resultIntX.Take(resultIntX.Length - 1).Select(x => x.ToString("F2")))})";
+
+
+                if (isMax){
+
+                    txtResultZ.Text = resultX[resultX.Length - 1].ToString("F2");
+                    _protocol.SaveSectionHeader("ОПТИМАЛЬНИЙ ДРОБОВИЙ РОЗВ'ЯЗОК: ");
+                    _protocol.ResultSimplexSave(resultX, resultX[resultX.Length - 1]);
+
+
+                    txtIntResultZ.Text = resultIntX[resultIntX.Length - 1].ToString("F2");
+                    _protocol.SaveSectionHeader("ОПТИМАЛЬНИЙ ЦІЛИЙ РОЗВ'ЯЗОК: ");
+                    _protocol.ResultSimplexSave(resultIntX, resultIntX[resultIntX.Length - 1]);
+
+                }
+                else
+                {
+                    txtResultZ.Text = (-resultX[resultX.Length - 1]).ToString("F2");
+                    _protocol.SaveSectionHeader("ОПТИМАЛЬНИЙ ЦІЛИЙ РОЗВ'ЯЗОК: ");
+                    _protocol.ResultSimplexSave(resultX, (-resultX[resultX.Length - 1]));
+
+
+                    txtIntResultZ.Text = (-resultIntX[resultIntX.Length - 1]).ToString("F2");
+                    _protocol.SaveSectionHeader("ОПТИМАЛЬНИЙ ДРОБОВИЙ РОЗВ'ЯЗОК: ");
+                    _protocol.ResultSimplexSave(resultIntX, (-resultIntX[resultIntX.Length - 1]));
+
+                }
+
+
+
+                txtblk_protocol1.Text = $"Протокол обичслень створено за посиланням: {fullPath}";
+            }
+            catch (Exception ex)
+            {
+                txtResultZ.Clear();
+                txtResultX.Clear();
+                txtIntResultZ.Clear();
+                txtIntResultX.Clear();
+                MessageBox.Show($"Помилка: {ex.Message}", "Помилка розрахунку", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void btnCalculate_Click1(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+
+                double[,] matrix = ParseToSimplexTable(txtConstraints1.Text, txtEquality1.Text, txtZFunction1.Text);
+                bool isMax = rbMax1.IsChecked ?? false;
+
+                if (isMax) matrix = PrepareForMax(matrix);
+                
+                _solver.Reset();
+                _dualsolver.Reset();
+                _protocol.FileCleaner();
+
+                double[] resultX = _solver.FindOptimalSolution(matrix);
+             
+                _protocol.FileCleaner();
+
+
+                double[] resultU = _dualsolver.FindOptimalSolution(matrix);
+
+                double Z = resultX[resultX.Length - 1];
+                double finalZW = isMax ? Z : -Z;
+
+                txtResultX1.Text = $"X = ({string.Join("; ", resultX.Take(resultX.Length - 1).Select(x => x.ToString("F2")))})";
+                txtResultZ1.Text = $"Z = {finalZW.ToString("F2")}";
+
+                txtResultU.Text = $"U = ({string.Join("; ", resultU.Take(resultU.Length - 1).Select(u => u.ToString("F2")))})";
+                txtResultW.Text = $"W = {finalZW.ToString("F2")}";
+
+                _protocol.SaveSectionHeader("ОПТИМАЛЬНІ РОЗВ'ЯЗКИ");
+                _protocol.SaveSectionHeader("Пряма задача (X, Z):");
+                _protocol.ResultSimplexSave(resultX, finalZW);
+
+                _protocol.SaveSectionHeader("Двоїста задача (U, W):");
+                _protocol.ResultDualSimplexSave(resultU, finalZW);
+
+                txtblk_protocol2.Text = $"Протокол створено: {fullPath}";
+            }
+            catch (Exception ex)
+            {
+                txtResultX1.Clear(); txtResultZ1.Clear();
+                txtResultU.Clear(); txtResultW.Clear();
+                MessageBox.Show(ex.Message, "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+
+        private void btnCalculate_Click2(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(txtMatrix.Text))
+                {
+                    MessageBox.Show("Будь ласка, введіть матрицю гри.");
+                    return;
+                }
+                CalculationResult res = GameFullCalculation();
+
+                txtPlayer1Result.Text = string.Join("; ", res.P.Select(x => x.ToString("F2")));
+                txtPlayer2Result.Text = string.Join("; ", res.Q.Select(u => u.ToString("F2")));
+                txtV.Text = $"V = {res.V:F2}";
+
+                _protocol.SaveSectionHeader("Змішані стратегії першого гравця");
+                _protocol.SaveMixedStrategy(res.P);
+
+                _protocol.SaveSectionHeader("Змішані стратегії другого гравця");
+                _protocol.SaveMixedStrategy(res.Q);
+
+                _protocol.SaveSectionHeader($"Ціна гри:  {res.V:F1}" );
+
+
+                txtblk_protocol3.Text = $"Протокол обчислень створено за посиланням: {fullPath}";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Помилка при розрахунку: " + ex.Message);
+            }
+        }
+
+
+        private void SimulationButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(txtIterations.Text) || string.IsNullOrWhiteSpace(txtMatrix.Text))
+                {
+                    MessageBox.Show("Заповніть матрицю та кількість партій!");
+                    return;
+                }
+
+                int n = int.Parse(txtIterations.Text);
+
+                CalculationResult res = GameFullCalculation();
+                GameSimulation simWin = new GameSimulation(res.OriginalMatrix, res.P, res.Q, n);
+
+                simWin.Owner = this;
+                simWin.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                simWin.Show();
+
+
+                txtPlayer1Result.Text = string.Join("; ", res.P.Select(x => x.ToString("F2")));
+                txtPlayer2Result.Text = string.Join("; ", res.Q.Select(u => u.ToString("F2")));
+                txtV.Text = $"V = {res.V:F2}";
+                _protocol.FileCleaner();
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Помилка: " + ex.Message);
+            }
+        }
+
+
+        private void Calculate_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                _protocol.FileCleaner();
+
+                
+                if (string.IsNullOrWhiteSpace(MatrixInput.Text))
+                {
+                    MessageBox.Show("Будь ласка, введіть матрицю гри.");
+                    return;
+                }
+
+                var originalMatrix = ParseMatrix(MatrixInput.Text);
+                var strategy = ParseVector(txtStrategy.Text);
+
+                if (!double.TryParse(txtY.Text,
+                            System.Globalization.NumberStyles.Any,
+                            System.Globalization.CultureInfo.InvariantCulture,
+                            out double y))
+                {
+                    MessageBox.Show("Некоректний коефіцієнт Y. Використовуйте число, наприклад 0.3");
+                    return;
+                }
+
+                _protocol.InputMatrix(originalMatrix);
+
+                List<int> wald = _wald.Solver(originalMatrix);
+                _protocol.SaveOptimalStrategies(wald);
+
+                List<int> maximax = _maximax.Solver(originalMatrix);
+                _protocol.SaveOptimalStrategies(maximax);
+
+                List<int> hurwicz = _hurwicz.Solver(originalMatrix, y);
+                _protocol.SaveOptimalStrategies(hurwicz);
+
+                List<int> bayes = _bayes.Solver(originalMatrix, strategy);
+                _protocol.SaveOptimalStrategies(bayes);
+
+                List<int> laplace = _laplace.Solver(originalMatrix);
+                _protocol.SaveOptimalStrategies(laplace);
+
+                List<int> savage = _savage.Solver(originalMatrix);
+                _protocol.SaveOptimalStrategies(savage);
+
+                WaldResult.Text = FormatStrategyNames(wald);
+                MaximaxResult.Text = FormatStrategyNames(maximax);
+                HurwiczResult.Text = FormatStrategyNames(hurwicz);
+                BayesResult.Text = FormatStrategyNames(bayes);
+                SavageResult.Text = FormatStrategyNames(savage);
+                LaplaceResult.Text = FormatStrategyNames(laplace);
+
+                var allIndices = wald.Concat(maximax).Concat(hurwicz)
+                                     .Concat(bayes).Concat(savage).Concat(laplace).ToList();
+
+                if (allIndices.Count > 0)
+                {
+                    var frequencies = allIndices
+                        .GroupBy(index => index)
+                        .Select(g => new { Index = g.Key, Count = g.Count() })
+                        .ToList();
+
+                    int maxFreq = frequencies.Max(f => f.Count);
+
+                    var bestIndices = frequencies
+                        .Where(f => f.Count == maxFreq)
+                        .Select(f => f.Index)
+                        .OrderBy(i => i)
+                        .ToList();
+
+                    MostFrequentResult.Text = FormatStrategyNames(bestIndices);
+                }
+
+                txtblk_protocol4.Text = $"Протокол обчислень створено за посиланням: {fullPath}";
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Помилка при обчисленні: {ex.Message}");
+            }
+        }
+
+        private string FormatStrategyNames(List<int> indices)
+        {
+            if (indices == null || indices.Count == 0) return "Немає розв'язків";
+
+            var names = indices.Select(i => $"A{i + 1}");
+            return string.Join(" або ", names);
+        }
+
+
+
+        private double[,] PrepareForMax(double[,] matrix)
+        {
+            int lastRow = matrix.GetLength(0) - 1;
+            int lastCol = matrix.GetLength(1) - 1;
+
+            for (int j = 0; j < lastCol; j++)
+            {
+                matrix[lastRow, j] *= -1;
+            }
+            return matrix;
+        }
+
+
+
+
+        private double[,] ParseToSimplexTable(string constraints, string equality, string zFunc)
+        {
+            string[] linesConstraints = constraints.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+            string[] linesEquality = equality.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+
+            var allLines = linesConstraints.Concat(linesEquality).ToArray();
+
+
+            int rowCountConstraints = linesConstraints.Length;
+            int rowCountEquality = linesEquality.Length;
+
+            _solver.RowsEqualityCount = rowCountEquality;
+            _dualsolver.RowsEqualityCount = rowCountEquality;
+
+            int rowCount = rowCountConstraints + rowCountEquality;
+
+
+            string fullText = constraints + " " + equality + " " + zFunc;
+            var matches = Regex.Matches(fullText, @"x(\d+)");
+
+            int maxVarIndex = 0;
+            foreach (Match m in matches)
+            {
+                int idx = int.Parse(m.Groups[1].Value);
+                if (idx > maxVarIndex) maxVarIndex = idx;
+            }
+
+            double[,] matrix = new double[rowCount + 1, maxVarIndex + 1];
+
+            for (int i = 0; i < rowCount; i++)
+            {
+                ParseVariables(allLines[i], matrix, i, maxVarIndex);
+
+                var constMatch = Regex.Match(allLines[i], @"(?:<=|>=|=)\s*(?<const>[+-]?\d+(?:\.\d+)?)");
+                if (constMatch.Success)
+                {
+                    matrix[i, maxVarIndex] = double.Parse(constMatch.Groups["const"].Value.Replace('.', ','));
+                }
+
+                if (allLines[i].Contains(">="))
+                {
+                    for (int j = 0; j <= maxVarIndex; j++) matrix[i, j] *= -1;
+                }
+            }
+
+            ParseVariables(zFunc, matrix, rowCount, maxVarIndex);
+
+            return matrix;
+        }
+
+
+
+        private void ParseVariables(string line, double[,] matrix, int row, int maxVar)
+        {
+            string pattern = @"(?<coeff>[+-]?\d*(?:\.\d+)?)\s*x(?<index>\d+)";
+            var matches = Regex.Matches(line, pattern);
+
+            foreach (Match m in matches)
+            {
+                int index = int.Parse(m.Groups["index"].Value) - 1;
+
+                if (index >= 0 && index < maxVar)
+                {
+                    string val = m.Groups["coeff"].Value;
+                    double c = 1;
+                    if (val == "-") c = -1;
+                    else if (!string.IsNullOrEmpty(val) && val != "+")
+                        c = double.Parse(val.Replace('.', ','));
+
+                    matrix[row, index] = c;
+                }
+            }
+        }
+
+        public double[,] PrepareExtendedMatrix(double[,] shiftedMatrix)
+        {
+            int rows = shiftedMatrix.GetLength(0);
+            int cols = shiftedMatrix.GetLength(1);
+
+            double[,] extendedMatrix = new double[rows + 1, cols + 1];
+
+            for (int i = 0; i < rows + 1; i++)
+            {
+                for (int j = 0; j < cols + 1; j++)
+                {
+                    if (i < rows && j < cols)
+                    {
+                        extendedMatrix[i, j] = shiftedMatrix[i, j];
+                    }
+                    else if (i < rows && j == cols)
+                    {
+                        extendedMatrix[i, j] = 1;
+                    }
+                    else if (i == rows && j < cols)
+                    {
+                        extendedMatrix[i, j] = -1;
+                    }
+                    else
+                    {
+                        extendedMatrix[i, j] = 0;
+                    }
+                }
+            }
+
+            return extendedMatrix;
+        }
+
+
+        private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^0-9]+");
+            e.Handled = regex.IsMatch(e.Text);
+        }
+
+        private CalculationResult GameFullCalculation()
+        {
+            _analyzer.InactiveRows.Clear();
+            _analyzer.InactiveCols.Clear();
+
+            _solver.Reset();
+            _dualsolver.Reset();
+
+            var originalMatrix = ParseMatrix(txtMatrix.Text);
+            var workingMatrix = (double[,])originalMatrix.Clone();
+
+            int rows = workingMatrix.GetLength(0);
+            int cols = workingMatrix.GetLength(1);
+
+            double[] resX = new double[rows];
+            double[] resU = new double[cols];
+            double vFinal = 0;
+
+            double[] pureRes = _analyzer.PureStrategy(workingMatrix);
+
+            if (pureRes != null)
+            {
+                int bestRow = (int)pureRes[0];
+                int bestCol = (int)pureRes[1];
+                vFinal = pureRes[2];
+
+                for (int i = 0; i < rows; i++) resX[i] = (i == bestRow) ? 1.0 : 0.0;
+                for (int j = 0; j < cols; j++) resU[j] = (j == bestCol) ? 1.0 : 0.0;
+
+
+                _protocol.SaveSectionHeader("Cтратегії першого гравця");
+                _protocol.SaveMixedStrategy(resX);
+
+
+                _protocol.SaveSectionHeader("Cтратегії другого гравця");
+                _protocol.SaveMixedStrategy(resU);
+
+
+                _protocol.SaveSectionHeader($"Ціна гри:  {vFinal:F1}");
+            }
+            else
+            {
+                if ((cols == 2 && rows > cols) || (cols > rows && rows == 2))
+                {
+                    workingMatrix = _analyzer.SimplifyMatrix(workingMatrix);
+
+                }
+
+                    double minVal = workingMatrix.Cast<double>().Min();
+                double k = minVal < 0 ? Math.Abs(minVal) + 1 : 0;
+
+                if (k > 0)
+                {
+                    for (int i = 0; i < workingMatrix.GetLength(0); i++)
+                    {
+                        for (int j = 0; j < workingMatrix.GetLength(1); j++)
+                        {
+                            workingMatrix[i, j] += k;
+                        }
+                    }
+
+                }
+
+                double[,] extended = PrepareExtendedMatrix(workingMatrix);
+               
+
+                double[] rawX = _solver.FindOptimalSolution(extended);
+                _protocol.FileCleaner();
+
+                double[] rawU = _dualsolver.FindOptimalSolution(extended);
+                double Z = rawX[rawX.Length - 1];
+
+                vFinal = (1 / Z) - k;
+
+                int rIdx = 0;
+                for (int i = 0; i < rows; i++)
+                {
+                    if (!_analyzer.InactiveRows.Contains(i)) resX[i] = rawU[rIdx++] / Z;
+                    else resX[i] = 0;
+                }
+
+                int cIdx = 0;
+                for (int j = 0; j < cols; j++)
+                {
+                    if (!_analyzer.InactiveCols.Contains(j)) resU[j] = rawX[cIdx++] / Z;
+                    else resU[j] = 0;
+                }
+            }
+
+            return new CalculationResult { OriginalMatrix = originalMatrix, P = resX, Q = resU, V = vFinal };
+        }
+
+    }
+}
+
