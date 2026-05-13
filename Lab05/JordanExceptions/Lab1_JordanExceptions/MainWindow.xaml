@@ -5,13 +5,77 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Lab1_JordanExceptions"
         mc:Ignorable="d"
-        Title="Lab4" Height="753" Width="800">
+        Title="Lab5" Height="753" Width="800">
     <Grid Background="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
             <ColumnDefinition Width="399*"/>
         </Grid.ColumnDefinitions>
         <TabControl Grid.ColumnSpan="2">
+
+            <TabItem Header="Розв'язання транспортної задачі" Height="20" VerticalAlignment="Top">
+                <Grid Background="White" Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="280"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                            <Label Content="Вартості доставок:"/>
+                            <TextBox x:Name="txtTranspCosts" Height="140" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"
+                                     FontFamily="Consolas" Padding="5"
+                                     Text="6  3  2&#x0a;2  1  5&#x0a;3  4  1"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1">
+                            <Label Content="Запаси в пунктах відправлення:"/>
+                            <TextBox x:Name="txtTranspSupply" Text="30 20 50" Padding="3"/>
+                            <Label Content="Заявки в пунктах призначення:" Margin="0,10,0,0"/>
+                            <TextBox x:Name="txtTranspDemand" Text="10 65 25" Padding="3"/>
+                            <Button x:Name="btnTranspSolve" Content="Знайти оптимальний план" Height="40" Margin="0,16,0,0"
+                                    FontWeight="Bold" Background="LightBlue" Click="BtnTranspSolve_Click"/>
+                            <StackPanel Margin="0,12,0,0">
+                                <RadioButton x:Name="rbTranspNW" Content="м. північно-західного кута для опорного плану" IsChecked="True" GroupName="TranspInit"/>
+                                <RadioButton x:Name="rbTranspMinEl" Content="м. мінімального елемента для опорного плану" Margin="0,4,0,0" GroupName="TranspInit"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+                    <Grid Grid.Row="1" Margin="0,10,0,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid Grid.Row="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                                <Label Content="Опорний план перевезень:"/>
+                                <TextBox x:Name="txtTranspInitial" Height="120" IsReadOnly="True" Background="#F8F8F8"
+                                         FontFamily="Consolas" Padding="5" VerticalScrollBarVisibility="Auto"/>
+                                <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                                    <Label Content="Вартість:" VerticalAlignment="Center"/>
+                                    <TextBox x:Name="txtTranspInitialCost" Width="120" IsReadOnly="True" Background="#F0F0F0" VerticalContentAlignment="Center"/>
+                                </StackPanel>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                                <Label Content="Оптимальний план перевезень:"/>
+                                <TextBox x:Name="txtTranspOptimal" Height="120" IsReadOnly="True" Background="#F8F8F8"
+                                         FontFamily="Consolas" Padding="5" VerticalScrollBarVisibility="Auto"/>
+                                <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                                    <Label Content="Вартість:" VerticalAlignment="Center"/>
+                                    <TextBox x:Name="txtTranspOptimalCost" Width="120" IsReadOnly="True" Background="#F0F0F0" VerticalContentAlignment="Center"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Grid>
+                        <TextBlock x:Name="txtblk_protocolTransp" Grid.Row="1" TextWrapping="Wrap" Margin="0,10,0,0" FontSize="16" IsEnabled="False"/>
+                    </Grid>
+                </Grid>
+            </TabItem>
 
             <TabItem Header="Ігри з природою" Height="20" VerticalAlignment="Top">
                 <Grid Background="White">

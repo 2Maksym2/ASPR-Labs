@@ -174,6 +174,73 @@ namespace Lab1_JordanExceptions
         }
 
 
+        private void BtnTranspSolve_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var costs = ParseMatrix(txtTranspCosts.Text);
+                var supply = ParseVector(txtTranspSupply.Text);
+                var demand = ParseVector(txtTranspDemand.Text);
+
+                int n = supply.Length;
+                int m = demand.Length;
+                if (costs.GetLength(0) != n || costs.GetLength(1) != m)
+                {
+                    MessageBox.Show("Кількість рядків матриці вартостей має дорівнювати числу запасів, стовпців — числу заявок.", "Помилка вводу",
+                        MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                _protocol.FileCleaner();
+                var initMethod = rbTranspMinEl.IsChecked == true
+                    ? TransportationSolver.InitialMethod.MinimumCost
+                    : TransportationSolver.InitialMethod.NorthWestCorner;
+
+                var result = TransportationSolver.Solve(costs, supply, demand, initMethod);
+
+                txtTranspInitial.Text = FormatTransportPlan(result.InitialPlan);
+                txtTranspInitialCost.Text = FormatCost(result.InitialCost);
+
+                txtTranspOptimal.Text = FormatTransportPlan(result.OptimalPlan);
+                txtTranspOptimalCost.Text = FormatCost(result.OptimalCost);
+
+                _protocol.SaveSectionHeader("Транспортна задача");
+                _protocol.StepSave(result.Protocol);
+                txtblk_protocolTransp.Text = $"Протокол обичслень створено за посиланням: {fullPath}";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Транспортна задача", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private static string FormatTransportPlan(double[,] x)
+        {
+            int n = x.GetLength(0);
+            int m = x.GetLength(1);
+            var sb = new StringBuilder();
+            for (int i = 0; i < n; i++)
+            {
+                for (int j = 0; j < m; j++)
+                {
+                    if (j > 0) sb.Append("  ");
+                    double v = x[i, j];
+                    if (Math.Abs(v) < 1e-6)
+                        sb.Append('x');
+                    else if (Math.Abs(v - Math.Round(v)) < 1e-4)
+                        sb.Append(((int)Math.Round(v)).ToString());
+                    else
+                        sb.Append(v.ToString("0.##"));
+                }
+                sb.AppendLine();
+            }
+            return sb.ToString().TrimEnd();
+        }
+
+        private static string FormatCost(double z) =>
+            Math.Abs(z - Math.Round(z)) < 1e-4 ? ((int)Math.Round(z)).ToString() : z.ToString("0.##");
+
+
 
         private void btnCalculate_Click(object sender, RoutedEventArgs e)
         {
